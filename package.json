@@ -1,0 +1,25 @@
+{
+  "name": "booking-coach-tickets",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "(https://github.com/PhuLoc25102003/Project_1_Booking_Coach_Tickets.git)"
+  },
+  "keywords": [
+    "nodejs"
+  ],
+  "author": "Dang Phu Loc",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^4.21.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
+}
