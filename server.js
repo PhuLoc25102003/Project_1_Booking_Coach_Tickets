@@ -2,14 +2,16 @@ const express = require('express')
 const app = express()
 const port = 3000
 const path = require('path');
+const indexRouter = require('./routes/index');
 
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
+app.use(express.static(path.join(__dirname, 'public')));
+
+app.use('/', indexRouter);
+
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-app.get('/page1', (req, res) => {
+app.get('/homepage', (req, res) => {
     res.render('page1.ejs')
   })
 
