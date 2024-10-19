@@ -17,19 +17,66 @@
     <main>
 
         <div class="container">
-            <div class="LoginAndRegisterFrame">
-                <div class="login">
-                    <div class="heading">
+            <div class="row">
+                <div class="col-sm-12 col-lg-6">
 
-                    </div>
-                    <div class="login-form">
-                        <input type="text" placeholder="Username" id="username" required>
-                        <input type="text" placeholder="Password" id="password" required>
-                        <button type="button">Đăng Nhập</button>
-                    </div>
                 </div>
+
+                <div class="col-sm-12 col-lg-6">
+                    <div class="LoginAndRegisterFrame">
+                        <div class="heading">
+                          <h1>Đăng nhập tài khoản</h1>
+                        </div>
+                        <div class="switch-function">
+                          <div class="login-function">
+                            <h2 class="switch-heading" id="showLogin">Đăng nhập</h2>
+                          </div>
+                          <div class="register-function">
+                            <h2 class="switch-heading" id="showRegister">Đăng ký</h2>
+                          </div>
+                        </div>
+
+                      
+     
+                        <div class="login-form">
+                          <div class="input-frame">
+                            <input type="text" placeholder="Username" id="loginUsername" required>
+                            <i class="fa fa-user-o icon-position-left" aria-hidden="true"></i>
+                          </div>
+                          <div class="input-frame">
+                            <input type="password" placeholder="Password" id="password" required>
+                            <i class="fa fa-lock icon-position-left" aria-hidden="true"></i>
+                            <i class="fa fa-eye-slash icon-position toggle-password" aria-hidden="true" id="togglePassword"></i>
+                          </div>
+                          <button type="button" id="loginButton">Đăng Nhập</button>
+                        </div>
+                      
+         
+                        <div class="register-form" style="display:none;">
+                          <div class="input-frame">
+                            <input type="text" placeholder="Username" id="registerUsername" required>
+                            <i class="fa fa-user-o icon-position-left" aria-hidden="true"></i>
+                          </div>
+                          <div class="input-frame">
+                            <input type="password" placeholder="Password" id="registerPassword" required>
+                            <i class="fa fa-lock icon-position-left" aria-hidden="true"></i>
+                            <i class="fa fa-eye-slash icon-position toggle-password" aria-hidden="true" id="toggleRegisterPassword"></i>
+                          </div>
+                          <div class="input-frame">
+                            <input type="password" placeholder="Confirm password" id="confirmPassword" required>
+                            <i class="fa fa-eye-slash icon-position toggle-password" aria-hidden="true" id="toggleConfirmPassword"></i>
+                            <i class="fa fa-lock icon-position-left" aria-hidden="true"></i>
+                          </div>
+                          <button type="button" id="registerButton">Đăng ký</button>
+                        </div>
+                      </div>
+
+                </div>
+
+
             </div>
         </div>
+
 
 
     </main>

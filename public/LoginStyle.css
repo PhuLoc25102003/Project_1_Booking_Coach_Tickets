@@ -1,4 +1,98 @@
-.LoginAndRegisterFrame{
-    width: 70%;
-    display: inline-flex;
+.LoginAndRegisterFrame {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+
+}
+.input-frame input{
+    padding: 5px !important;
+   padding-left: 25px !important;
+}
+.switch-function {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.switch-function .switch-heading {
+    font-weight: bold;
+    font-size: 18px;
+    padding: 10px;
+    cursor: pointer;
+    position: relative;
+}
+
+.switch-function .login-function,
+.switch-function .register-function {
+    display: inline-block;
+    margin: 0 10px;
+    cursor: pointer;
+}
+
+.switch-function .switch-heading {
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.switch-heading.active {
+    color: #ff6600;
+}
+
+.login-function,
+.register-function {
+    width: 50%;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.switch-heading {
+    font-size: x-large;
+}
+
+.heading h1 {
+    text-align: center;
+    font-size: xx-large;
+}
+
+.login-form,
+.register-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.input-frame {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.login-form input,
+.login-form button,
+.register-form input,
+.register-form button {
+    width: 100%;
+    max-width: 70%;
+    margin: 20px;
+    padding: 2px;
+}
+.icon-position-left{
+    position: absolute;
+    left: 18%;
+}
+.icon-position {
+    position: absolute;
+    right: 18%;
+}
+
+.login-form button,
+.register-form button {
+    border: none;
+    border-radius: 10px;
+    padding: 4px;
 }
