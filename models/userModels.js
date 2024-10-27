@@ -3,6 +3,7 @@ const db = require("../config/dbConfig");
 async function getAllAcounts() {
     try {
         const [rows] = await db.query('SELECT * FROM Account');
+        console.log(rows);
         return rows;
     } catch (error) {
         console.error('Lỗi khi lấy dữ liệu:', err);

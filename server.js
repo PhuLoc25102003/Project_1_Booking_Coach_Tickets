@@ -16,7 +16,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 userModel.checkConnection();
 
-
 app.use(indexRouter);
 
 app.listen(port, () => {
