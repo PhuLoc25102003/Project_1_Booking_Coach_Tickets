@@ -1,9 +1,17 @@
+*{
+    margin: 0;
+    padding: 0;
+}
 .LoginAndRegisterFrame {
     display: flex;
     flex-direction: column;
     justify-content: center;
-
-
+    align-items: center;
+}
+.loginAndRegisterForm{
+    border: 1px solid black;
+    width: 100%;
+    max-width: 50%;
 }
 .input-frame input{
     padding: 5px !important;
@@ -42,7 +50,7 @@
 
 .login-function,
 .register-function {
-    width: 50%;
+
     box-sizing: border-box;
     text-align: center;
 }
@@ -77,17 +85,17 @@
 .register-form input,
 .register-form button {
     width: 100%;
-    max-width: 70%;
+
     margin: 20px;
     padding: 2px;
 }
 .icon-position-left{
     position: absolute;
-    left: 18%;
+    left: 28%;
 }
 .icon-position {
     position: absolute;
-    right: 18%;
+    right: 28%;
 }
 
 .login-form button,

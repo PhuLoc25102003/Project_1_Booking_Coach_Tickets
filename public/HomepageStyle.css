@@ -1,0 +1,167 @@
+/* Basic Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f5;
+}
+
+header {
+    background-image: linear-gradient(#25a3d1, #1e5d74);
+    height: 210px;
+    position: relative;
+    margin-bottom: 12%;
+}
+
+.top-header {
+padding-top: 1%;
+    text-align: center;
+}
+
+a {
+    text-decoration: none;
+
+}
+
+.navigator {
+
+    /* border-top: 1px solid white; */
+    display: block;
+    overflow-wrap: normal;
+
+    height: 5%;
+
+
+}
+
+.menu ul {
+    list-style-type: none;
+    text-align: center;
+}
+
+.menu li,
+.menu lh {
+    display: inline-block;
+    width: 10%;
+    height: 10%;
+    margin: 0% 2% 0% 2%;
+   
+}
+
+.menu li a:hover,
+.menu lh a:hover {
+    color: white;
+}
+
+.menu li a,
+.menu lh a {
+    color: #f0f0f5;
+    width: 100%;
+    max-width: 100%;
+    cursor: pointer;
+}
+
+body {
+    font-family: Arial, sans-serif;
+
+}
+.login{
+    color: #1e5d74;
+    background-color: rgb(241, 236, 236); 
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    width: 50%;
+    height: 50%;
+    border-radius: 4px;
+}
+.login a{
+    text-decoration: none;
+    color: #1e5d74;
+    padding: 20px;
+
+}
+
+.login:hover{
+    background-color: white;
+}
+
+.cover-img {
+    width: 45%;
+    margin: 3% auto;
+
+    position: relative;
+}
+
+
+.cover-img>img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+    margin: 0% 0% 5% 0%;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+
+}
+
+.type-of-ticket{
+    color: #1e5d74;
+    position: absolute;
+   margin-top: -2%;
+}
+.one-way-radio{
+    display: inline-block;
+}
+.two-way-radio{
+    display: inline-block;
+}
+/* Search Section */
+.search-section {
+    background-color: white;
+    padding: 2%;
+    margin-top: -2%x;
+    border-radius: 10px;
+    border: #2697BF 2px solid;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    position: relative;
+    padding-top: 3%;
+}
+
+.form-row {
+    display: inline-block;
+    margin-bottom: 2%;
+}
+
+label {
+    display: inline block;
+    font-weight: bold;
+    margin-bottom: 0, 5%;
+}
+
+select,
+input[type="date"] {
+    width: 100%;
+    padding: 5%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button {
+    background-color: #2697BF;
+    color: white;
+    padding: 1% 2%;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: medium;
+}
+
+button:hover {
+    background-color: #0adcf3;
+}
