@@ -71,6 +71,7 @@ body {
 }
 .login{
     color: #1e5d74;
+<<<<<<< HEAD
     background-color: rgb(241, 236, 236); 
     display: flex;
     justify-content: center; 
@@ -84,6 +85,11 @@ body {
     color: #1e5d74;
     padding: 20px;
 
+=======
+    background-color: rgb(241, 236, 236);
+    padding: 4% 8% 4% 8%;
+    
+>>>>>>> 308880a5c31748995fc16a301899c69844a91c1c
 }
 
 .login:hover{
