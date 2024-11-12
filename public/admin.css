@@ -1,0 +1,82 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+}
+
+.sidebar {
+    width: 15%;
+    background-color: #2697BF;
+    padding: 2%;
+    height: 100vh;
+    position: fixed;
+    color: white;
+}
+
+.sidebar h4 {
+    margin: 0;
+    padding: 2% 0;
+    text-align: center;
+}
+
+.admin-info {
+    text-align: center;
+    margin-bottom: 2%;
+}
+
+.admin-info p {
+    margin: 1% 0;
+}
+
+.sidebar ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.sidebar ul li {
+    margin: 15% 0;
+}
+
+.sidebar ul li a {
+    text-decoration: none;
+   color: white;
+    display: flex;
+    align-items: center;
+}
+.sidebar ul li a:hover{
+    font-weight: bold;
+    color: #2e5c8d;
+}
+
+.sidebar ul li a i {
+    margin-right: 3%;
+}
+
+
+
+.main-content {
+    margin-left: 15%;
+    
+    width: calc(100% - 15%);
+}
+header{
+    height: 70px;
+    display: flex;
+    margin-left: auto;
+    margin-right: auto;
+    justify-content: space-between;
+    align-items: center;
+   
+    position: relative;
+ 
+}
+.search-bar{
+    position: absolute;
+    right: 2%;
+    width: 15%;
+}
+
+
