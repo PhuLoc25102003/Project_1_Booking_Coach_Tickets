@@ -17,11 +17,22 @@ router.get('/Login', (req, res) => {
     res.sendFile(path.join(__dirname, '../views', 'LoginAndRegister.html'));
 });
 
+router.get('/AddRoute', (req, res) => {
+    res.sendFile(path.join(__dirname, '../views', 'AddRoute.html'));
+});
+
+router.get('/ShowRoutes', (req, res) => {
+    res.sendFile(path.join(__dirname, '../views', 'ShowRoute.html'));
+});
+
+
 
 router.post('/register', userControllers.register);
 
 router.post('/login', userControllers.login);
 
+router.post('/AddRoute', userControllers.addRoute);
 
+router.get('/routes', userControllers.getAllRoutes);
 
 module.exports = router;

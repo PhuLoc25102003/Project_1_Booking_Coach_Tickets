@@ -11,6 +11,15 @@ async function getAllAcounts() {
     }
 }
 
+async function fetchRoute() {
+    try {
+        const [rows] = await db.query('SELECT * FROM route');
+        return rows;
+      } catch (error) {
+        throw error;
+      }
+}
+
 async function createAccount(username, password) {
     try {
         const [result] = await db.query('INSERT INTO Account (username, password) VALUES (?, ?)', [username, password]);
@@ -33,12 +42,22 @@ async function createClient(clientId, name, email, phoneNumber) {
         throw error;
     }
 }
-
+async function createRoute(coach_name, coach_operator, departureTime, arrivalTime, departurePoint, arrivalPoint) {
+    
+    try {
+        // Use the `client_id` from the Account to insert into Client
+        const [result] = await db.query('INSERT INTO route (coach_name, coach_operator, departure_time, arrival_time, departure_point, arrival_point) VALUES (?, ?, ?, ?, ?, ?)', 
+        [coach_name, coach_operator, departureTime, arrivalTime, departurePoint, arrivalPoint]);
+        return { route_id: result.insertId, coach_name, coach_operator, departureTime, arrivalTime, departurePoint, arrivalPoint};
+    } catch (error) {
+        console.error('Lỗi khi tạo route', error);
+        throw error;
+    }
+}
 const findUserByUsername = async (username) => {
     const [rows] = await db.query('SELECT * FROM Account WHERE username = ?', [username]);
     return rows[0]; 
 };
-
 
 
 const checkConnection = async () => {
@@ -57,4 +76,6 @@ module.exports = {
     findUserByUsername,
     createAccount,
     createClient,
+    createRoute,
+    fetchRoute
 };
