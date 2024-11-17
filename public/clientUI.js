@@ -68,13 +68,22 @@ $(document).ready(function () {
         $.ajax({
             url: '/login',
             type: 'POST',
+            dataType: 'json',
             contentType: 'application/json',
             data: JSON.stringify({ username, password }),
             success: function (data) {
-                window.location.href = '/';
+                console.log(data);  // Kiểm tra object trả về
+                if (data.type === 'admin') {
+                    window.location.href = '/admin';  // Điều hướng admin đến trang admin
+                } else if (data.type === 'user') {
+                    window.location.href = '/';  // Điều hướng user đến trang chính
+                } else {
+                    alert('Unknown account type');
+                }
+        
             },
             error: function (error) {
-                alert('Tài khoản hoặc mật khẩu không đúng!');
+                alert(error);
             }
         });
     });

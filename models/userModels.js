@@ -59,6 +59,11 @@ const findUserByUsername = async (username) => {
     return rows[0]; 
 };
 
+const findAdminByUsername = async (username) => {
+    const [rows] = await db.query('SELECT * FROM Admin WHERE username = ?', [username]);
+    return rows[0]; 
+};
+
 
 const checkConnection = async () => {
     try {
@@ -77,5 +82,6 @@ module.exports = {
     createAccount,
     createClient,
     createRoute,
-    fetchRoute
+    fetchRoute,
+    findAdminByUsername,
 };
