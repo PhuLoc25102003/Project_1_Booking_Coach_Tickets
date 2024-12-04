@@ -5,13 +5,12 @@ const userModel = require('../models/userModels');
 const login = async (req, res) => {
   const { username, password } = req.body;
   try {
- 
+
     let user = await userModel.findUserByUsername(username);
     
- 
     if (!user) {
       user = await userModel.findAdminByUsername(username);
-      if (user && user.password === password) {
+      if (user && user.admin_password === password) {
     
         return res.status(200).json({ message: 'Login successfully', type: 'admin' });
       } else {
@@ -20,8 +19,7 @@ const login = async (req, res) => {
       }
     }
 
-
-    if (user.password === password) {
+    if (user.client_password === password) {
       return res.status(200).json({ message: 'Login successfully', type: 'user' });
     } else {
       return res.status(400).json({ message: 'Username or password is incorrect!' });
@@ -31,57 +29,32 @@ const login = async (req, res) => {
     return res.status(500).json({ message: 'Error logging in', error });
   }
 };
-const getAllRoutes = async (req, res) => {
-  try {
-    const routes = await userModel.fetchRoute();
-    return res.status(200).json(routes);
-  } catch (error) {
-    return res.status(500).json({ message: 'Error fetching routes', error });
-  }
-};
 
 
-const register = async (req, res) => {
+const registerClient = async (req, res) => {
   const { username, password, confirmPassword, name, email, phoneNumber } = req.body;
   try {
-    const user = await userModel.findUserByUsername(username);
-    if (user) {
+    const client = await userModel.findUserByUsername(username);
+    const admin = await userModel.findAdminByUsername(username);
+    if (client || admin) {
       return res.status(401).json({ message: 'Username already exists!' });
     }
     if (password !== confirmPassword) {
       return res.status(404).json({ message: `The confirmation password does not match.` });
     }
-    if (!user) {
-      const newAccount = await userModel.createAccount(username, password);
-      const clientId = newAccount.client_id;
-      // Now create the corresponding client using the same clientId
-      const newClient = await userModel.createClient(clientId, name, email, phoneNumber);
-      return res.status(201).json({ message: 'Registering successfully!' });
+    if (!client && !admin) {
+      const newClient = await userModel.createClient(username, password, name, email, phoneNumber);
+      return res.status(201).json({ message: 'Registering a client successfully!' });
     }
 
-    // Create the account
   } catch (error) {
     res.status(501).json({ message: 'Error registering', error });
   }
 }
 
 
-const addRoute = async (req, res) => {
-  const { coachName, coachOperator, departureTime, arrivalTime, departurePoint, arrivalPoint } = req.body;
-  try {
-    const addRoute = await userModel.createRoute(coachName, coachOperator, departureTime, arrivalTime, departurePoint, arrivalPoint);
-    return res.status(200).json({ message: 'Add route successfully' });
-
-  } catch (error) {
-    return res.status(500).json({ message: 'Error logging in', error });
-  }
-};
-
-
 module.exports = {
   login,
-  register,
-  addRoute,
-  getAllRoutes,
+  registerClient,
 
 } 

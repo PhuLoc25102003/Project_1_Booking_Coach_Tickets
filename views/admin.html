@@ -2,16 +2,16 @@
 <html lang="en">
 
 <head>
-    <!-- Required meta tags -->
+
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- Bootstrap CSS -->
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
         integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
     <link rel="stylesheet" href="/admin.css">
-    <script src="admin.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
     <title>Hello, world!</title>
 </head>
 
@@ -23,59 +23,412 @@
             <p>@Lockun</p>
             <p>System Administrator</p>
         </div>
-        <ul class="options">
-            <li class="option active"><a href="#"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-            <li class="option"><a href="#"><i class="fas fa-bus"></i> Buses</a></li>
-            <li class="option"><a href="#"><i class="fas fa-child"></i> Driver</a></li>
-            <li class="option"><a href="#"><i class="fas fa-road"></i> Routes</a></li>
-            <li class="option"><a href="#"><i class="fas fa-users"></i> Clients</a></li>
-            <li class="option"><a href="#"><i class="fas fa-ticket-alt"></i>Tickets</a></li>
-            <li class="option"><a href="#"><i class="fas fa-th"></i> Bookings</a></li>
-            <li class="option"><a href="#"><i class="fas fa-user-lock"></i> Add New Admin</a></li>
+        <ul class="menu">
+            <li class="menu-item active" id="dashboard-link"><a href="#"><i class="fas fa-tachometer-alt"></i>
+                    Dashboard</a></li>
+            <li class="menu-item" id="coach-link"><a href="#"><i class="fas fa-bus"></i> Buses</a></li>
+            <li class="menu-item" id="driver-link"><a href="#"><i class="fas fa-child"></i> Driver</a></li>
+            <li class="menu-item" id="route-link"><a href="#"><i class="fas fa-road"></i> Routes</a></li>
+            <li class="menu-item" id="client-link"><a href="#"><i class="fas fa-users"></i> Clients</a></li>
+            <li class="menu-item"><a href="#"><i class="fas fa-ticket-alt"></i> Tickets</a></li>
+            <li class="menu-item"><a href="#"><i class="fas fa-th"></i> Bookings</a></li>
+            <li class="menu-item" id="admin-link"><a href="#"><i class="fas fa-user-lock"></i> Add New Admin</a></li>
         </ul>
     </div>
 
-
     <div class="main-content">
-        <header>
-
-            <div class="search-bar ">
+        <!-- <header>
+            <div class="search-bar">
                 <div class="row">
                     <input class="form-control col-9" type="text" placeholder="Search">
                     <button type="submit" class="btn btn-primary col-3"><i class="fas fa-search"></i></button>
                 </div>
             </div>
-        </header>
+        </header> -->
 
         <main>
-            <div class="page-header">
-                
-            </div>
-            <section class="content">
 
+            
+
+            <section class = "wellcome">
+                <div id="welcomeContent">
+
+                </div>
+            </section>
+
+
+            <section class="coachs">
+                <div id="coachContent">
+
+                </div>
+
+                <div class="modal" id="coachModal">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+
+                            <!-- Modal Header -->
+                            <div class="modal-header">
+                                <h4 class="modal-title">Add Coach</h4>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+
+                            <!-- Modal Body (Form) -->
+                            <div class="modal-body">
+                                <form id="coachForm">
+                                    <div class="form-group">
+                                        <label for="coachType">Type:</label>
+                                        <input type="tel" class="form-control" id="coachType" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="seats">Seats:</label>
+                                        <input type="number" class="form-control" id="seats" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="licensePlate">License Plate Number:</label>
+                                        <input type="text" class="form-control" id="licensePlate" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="coachOperator">Coach Operator:</label>
+                                        <input type="text" class="form-control" id="coachOperator" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Add Coach</button>
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="modal" id="editCoachModal">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+
+                            <!-- Modal Header -->
+                            <div class="modal-header">
+                                <h4 class="modal-title">Edit Coach</h4>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+
+                            <!-- Modal Body (Form) -->
+                            <div class="modal-body">
+                                <form id="editCoachForm">
+                                    <input type="hidden" id="editCoachId">
+                                    <div class="form-group">
+                                        <label for="editCoachType">Coach Type:</label>
+                                        <input type="text" class="form-control" id="editCoachType" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editSeats">Phone:</label>
+                                        <input type="number" class="form-control" id="editSeats" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editLicensePlate">License Number:</label>
+                                        <input type="text" class="form-control" id="editLicensePlate" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editOperator">Coach Operator:</label>
+                                        <input type="text" class="form-control" id="editOperator" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
 
             </section>
+
+            <section class="drivers">
+
+                <div id="driverContent">
+
+                </div>
+
+                <div class="modal" id="driverModal">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+
+                            <!-- Modal Header -->
+                            <div class="modal-header">
+                                <h4 class="modal-title">Add Driver</h4>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+
+                            <!-- Modal Body (Form) -->
+                            <div class="modal-body">
+                                <form id="driverForm">
+                                    <div class="form-group">
+                                        <label for="driverName">Name:</label>
+                                        <input type="text" class="form-control" id="driverName" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="driverPhone">Phone:</label>
+                                        <input type="tel" class="form-control" id="driverPhone" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="licenseNumber">License Number:</label>
+                                        <input type="text" class="form-control" id="licenseNumber" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Add Driver</button>
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div class="modal" id="editDriverModal">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+
+                            <!-- Modal Header -->
+                            <div class="modal-header">
+                                <h4 class="modal-title">Edit Driver</h4>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+
+                            <!-- Modal Body (Form) -->
+                            <div class="modal-body">
+                                <form id="editDriverForm">
+                                    <input type="hidden" id="editDriverId">
+                                    <div class="form-group">
+                                        <label for="driverName">Name:</label>
+                                        <input type="text" class="form-control" id="editDriverName" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="driverPhone">Phone:</label>
+                                        <input type="tel" class="form-control" id="editDriverPhone" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="licenseNumber">License Number:</label>
+                                        <input type="text" class="form-control" id="editLicenseNumber" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <section class="routes">
+
+                <div id="routeContent">
+
+                </div>
+
+                <div class="modal" id="routeModal">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+
+                            <!-- Modal Header -->
+                            <div class="modal-header">
+                                <h4 class="modal-title">Add A Route</h4>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+
+                            <!-- Modal Body (Form) -->
+                            <div class="modal-body">
+                                <form id="routeForm">
+                                    <div class="form-group">
+                                        <label for="licensePlate">Coach License Plate:</label>
+                                        <input type="text" class="form-control" id="coachLicensePlate" required>
+                                        <ul class="suggestion-list" id="suggestions">
+
+                                        </ul>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="departureTime">Departure Time:</label>
+                                        <input type="time" class="form-control" id="departureTime" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="arrivalTime">Arrival Time:</label>
+                                        <input type="time" class="form-control" id="arrivalTime" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="departurePoint">Departure Point:</label>
+                                        <input type="text" class="form-control" id="departurePoint" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="arrivalPoint">Arrival Point:</label>
+                                        <input type="text" class="form-control" id="arrivalPoint" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="routeDate">Date:</label>
+                                        <input type="date" class="form-control" id="routeDate" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Add Route</button>
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="modal" id="editRouteModal">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+
+                            <!-- Modal Header -->
+                            <div class="modal-header">
+                                <h4 class="modal-title">Edit A Route</h4>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+
+                            <!-- Modal Body (Form) -->
+                            <div class="modal-body">
+                                <form id="editRouteForm">
+                                    <input type="hidden" id="editRouteId">
+                                    <div class="form-group">
+                                        <label for="editCoachLicensePlate">Coach License Plate:</label>
+                                        <input type="text" class="form-control" id="editCoachLicensePlate" required>
+                                        <ul id="coachSuggestions">
+
+                                        </ul>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editDepartureTime">Departure Time:</label>
+                                        <input type="time" class="form-control" id="editDepartureTime" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editArrivalTime">Arrival Time:</label>
+                                        <input type="time" class="form-control" id="editArrivalTime" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editDeparturePoint">Departure Point:</label>
+                                        <input type="text" class="form-control" id="editDeparturePoint" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editArrivalPoint">Arrival Point:</label>
+                                        <input type="text" class="form-control" id="editArrivalPoint" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editRouteDate">Date:</label>
+                                        <input type="date" class="form-control" id="editRouteDate" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            
+
+
+            <section class="clients">
+
+                <div id="clientContent">
+
+                </div>
+
+                <div class="modal" id="clientModal">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+
+                            <!-- Modal Header -->
+                            <div class="modal-header">
+                                <h4 class="modal-title">Add A Client</h4>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+
+                            <!-- Modal Body (Form) -->
+                            <div class="modal-body">
+                                <form id="clientForm">
+                                    <div class="form-group">
+                                        <label for="clientName">Client's Name:</label>
+                                        <input type="text" class="form-control" id="clientName" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="clientPhoneNumber">Client's Number:</label>
+                                        <input type="tel" class="form-control" id="clientPhoneNumber" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="clientEmail">Client's Email:</label>
+                                        <input type="email" class="form-control" id="clientEmail" required>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-primary">Add A Client</button>
+
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="modal" id="editClientModal">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+
+                            <!-- Modal Header -->
+                            <div class="modal-header">
+                                <h4 class="modal-title">Edit A Client</h4>
+                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            </div>
+
+                            <!-- Modal Body (Form) -->
+                            <div class="modal-body">
+                                <form id="editClientForm">
+                                    <input type="hidden" id="editClientId">
+                                    <div class="form-group">
+                                        <label for="editClientName">Client's Name:</label>
+                                        <input type="text" class="form-control" id="editClientName" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editClientPhoneNumber">Client's Phone Number:</label>
+                                        <input type="tel" class="form-control" id="editClientPhoneNumber" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editClientEmail">Client's Email:</label>
+                                        <input type="email" class="form-control" id="editClientEmail" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                </form>
+                            </div>
+
+                        </div>  
+                    </div>
+                </div>
+
+            </section>
+
+            <section class = "admin">
+
+                <div id ="adminContent">
+
+                </div>
+
+            </section>
+
+
         </main>
-
-
     </div>
 
     <!-- Optional JavaScript; choose one of the two! -->
 
     <!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js"
-        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-        crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
         crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 
-    <!-- Option 2: Separate Popper and Bootstrap JS -->
-    <!--
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js" integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+" crossorigin="anonymous"></script>
-    -->
+    <script src="Admin.js"></script>
+    <script src="LoginAndRegister.js"></script>
+
 </body>
 
 </html>

@@ -10,6 +10,7 @@ body {
     background-color: #f0f0f5;
 }
 
+/* Header styling */
 header {
     background-image: linear-gradient(#25a3d1, #1e5d74);
     height: 210px;
@@ -17,25 +18,20 @@ header {
     margin-bottom: 12%;
 }
 
+/* Top Header */
 .top-header {
-padding-top: 1%;
+    padding-top: 1%;
     text-align: center;
 }
 
 a {
     text-decoration: none;
-
 }
 
+/* Navigation Bar */
 .navigator {
-
-    /* border-top: 1px solid white; */
     display: block;
-    overflow-wrap: normal;
-
     height: 5%;
-
-
 }
 
 .menu ul {
@@ -43,93 +39,70 @@ a {
     text-align: center;
 }
 
-.menu li,
-.menu lh {
+.menu li {
     display: inline-block;
-    width: 10%;
-    height: 10%;
-    margin: 0% 2% 0% 2%;
-   
+    margin: 0 2%;
 }
 
-.menu li a:hover,
-.menu lh a:hover {
-    color: white;
-}
-
-.menu li a,
-.menu lh a {
+.menu li a {
     color: #f0f0f5;
-    width: 100%;
-    max-width: 100%;
     cursor: pointer;
 }
 
-body {
-    font-family: Arial, sans-serif;
-
+.menu li a:hover {
+    color: white;
 }
-.login{
+
+/* Login Section */
+.login {
     color: #1e5d74;
-<<<<<<< HEAD
-    background-color: rgb(241, 236, 236); 
+    background-color: rgb(241, 236, 236);
     display: flex;
-    justify-content: center; 
+    justify-content: center;
     align-items: center;
     width: 50%;
     height: 50%;
     border-radius: 4px;
 }
-.login a{
+
+.login a {
     text-decoration: none;
     color: #1e5d74;
     padding: 20px;
-
-=======
-    background-color: rgb(241, 236, 236);
-    padding: 4% 8% 4% 8%;
-    
->>>>>>> 308880a5c31748995fc16a301899c69844a91c1c
 }
 
-.login:hover{
+.login:hover {
     background-color: white;
 }
 
+/* Cover Image */
 .cover-img {
     width: 45%;
     margin: 3% auto;
-
-    position: relative;
 }
-
 
 .cover-img>img {
     width: 100%;
     height: auto;
     border-radius: 10px;
-    margin: 0% 0% 5% 0%;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    cursor: pointer;
-
 }
 
-.type-of-ticket{
+/* Ticket Type */
+.type-of-ticket {
     color: #1e5d74;
-    position: absolute;
-   margin-top: -2%;
+    margin-top: -2%;
 }
-.one-way-radio{
+
+.one-way-radio,
+.two-way-radio {
     display: inline-block;
 }
-.two-way-radio{
-    display: inline-block;
-}
+
 /* Search Section */
 .search-section {
     background-color: white;
     padding: 2%;
-    margin-top: -2%x;
     border-radius: 10px;
     border: #2697BF 2px solid;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -144,9 +117,8 @@ body {
 }
 
 label {
-    display: inline block;
     font-weight: bold;
-    margin-bottom: 0, 5%;
+    margin-bottom: 0.5%;
 }
 
 select,
@@ -164,10 +136,115 @@ button {
     padding: 1% 2%;
     border: none;
     border-radius: 5px;
-    cursor: pointer;
     font-size: medium;
+    cursor: pointer;
 }
 
 button:hover {
     background-color: #0adcf3;
+}
+
+.menu-toggle i {
+    color: black;
+}
+
+
+@media (max-width: 768px) {
+    .main-menu {
+        display: none;
+        /* Ẩn menu */
+    }
+
+    /* Hiển thị button menu */
+    .menu-toggle {
+        display: block;
+        font-size: 24px;
+        color: white;
+        cursor: pointer;
+        text-align: left;
+        padding: 10px;
+    }
+}
+
+/* Định dạng khi menu được mở */
+.main-menu.show {
+    display: block;
+    text-align: center;
+}
+
+/* Media Queries for Responsive Design */
+
+
+@media (min-width: 769px) {
+    .menu-toggle {
+        display: none;
+    }
+
+    .main-menu {
+        display: block;
+    }
+}
+
+@media (max-width: 1200px) {
+    .menu li {
+        width: auto;
+        margin: 0 1%;
+    }
+}
+
+@media (max-width: 768px) {
+
+    .menu-toggle {
+        display: block;
+    }
+
+    .main-menu {
+        display: none;
+    }
+
+    header {
+        height: auto;
+        margin-bottom: 8%;
+    }
+
+    .cover-img {
+        width: 70%;
+    }
+
+    .login {
+        width: 70%;
+    }
+
+    .search-section {
+        padding: 4%;
+    }
+
+    .menu li {
+        width: 25%;
+        margin: 0 2%;
+    }
+}
+
+@media (max-width: 576px) {
+    .menu li {
+        display: block;
+        width: 100%;
+        margin: 10px 0;
+    }
+
+    .cover-img {
+        width: 90%;
+    }
+
+    .login {
+        width: 90%;
+    }
+
+    .search-section {
+        padding: 6%;
+    }
+
+    button {
+        padding: 3% 6%;
+    }
 }
