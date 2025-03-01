@@ -5,64 +5,22 @@ function hideContent() {
     $('#driverContent').hide();
     $('#clientContent').hide();
     $('#adminContent').hide();
+    $('#dashboardContent').hide();
+    $('#bookingContent').hide();
+
 }
 
 
 
 function menuStatus() {
     $('.menu-item').click(function () {
-
         $('.menu-item').removeClass('active');
-
-
         $(this).addClass('active');
     });
 }
 
-//Driver
 
-function showDriverTable() {
-    $.ajax({
-        url: '/showDrivers',
-        type: 'GET',
-        success: function (data) {
-
-            $('#driverTableBody').empty();
-
-            data.forEach(driver => {
-                $('#driverTableBody').append(`
-                <tr id =${driver.driver_id}>
-                <td>${driver.driver_id}</td>
-                <td>${driver.driver_name}</td>
-                <td>${driver.phone}</td>
-                <td>${driver.license_number}</td>
-                <td>
-                     <button 
-            class="btn btn-warning btn-sm" 
-            id = "editDriverBtn"
-            data-id="${driver.driver_id}" 
-            data-name="${driver.driver_name}" 
-            data-phone="${driver.phone}" 
-            data-license="${driver.license_number}"
-            data-toggle="modal" 
-            data-target="#editDriverModal">
-            <i class="fas fa-edit"></i> Edit
-        </button>
-                    <button class="btn btn-danger btn-sm" id = "deleteDriverBtn">
-                        <i class="fas fa-trash"></i> Delete
-                    </button>
-                </td>
-              
-            `);
-            });
-        },
-        error: function (error) {
-            console.log('Error fetching route data:', error);
-        }
-    });
-}
-
-
+//Driver_function
 function deleteDriver(rowId) {
     $.ajax({
         url: '/deleteDriver',
@@ -70,7 +28,7 @@ function deleteDriver(rowId) {
         data: { id: rowId },
         success: function (response) {
             console.log('Driver deleted successfully:', response);
-            showDriverTable();
+            $('#driver-table').DataTable().ajax.reload();
         },
         error: function (err) {
             console.log('Error:', err);
@@ -82,26 +40,34 @@ function loadDriverList() {
     $('#driverContent').html(`
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h3>Drivers List</h3>
-            <button class="btn btn-success" id="openDriverModalBtn"><i class="fas fa-plus"></i> Add Driver</button>
+            <button class="btn btn-success" id="openDriverModalBtn"><i class="fas fa-plus"></i> Add A Driver</button>
         </div>
         <div class="table-responsive">
-            <table class="table table-striped table-bordered">
-                <thead class="thead-dark">
-                    <tr>
-                        <th>Driver ID</th>
-                        <th>Driver Name</th>
-                        <th>Phone</th>
-                        <th>License Number</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="driverTableBody">
-                    <!-- Rows will be dynamically added here -->
-                </tbody>
+            <table id="driver-table" class="table table-striped table-bordered" style="width:100%">
+            <thead>
+                <tr>
+                    <th>Driver ID</th>
+                    <th>Driver Name</th>
+                    <th>Phone</th>
+                    <th>License Number</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="driverTableBody">
+                 <!-- Rows will be dynamically added here -->
+            </tbody>
+            <tfoot>
+                <tr>
+                    <th>Driver ID</th>
+                    <th>Driver Name</th>
+                    <th>Phone</th>
+                    <th>License Number</th>
+                    <th>Actions</th>
+                </tr>
+            </tfoot>
             </table>
         </div>
     `);
-
 
     $("#openDriverModalBtn").on("click", function () {
         $('#driverModal').modal('show');
@@ -109,8 +75,67 @@ function loadDriverList() {
 }
 
 
+function showDriverTable() {
+    $('#driver-table').DataTable({
+        "processing": true,
+        "serverSide": true,
+        "ajax": {
+            "url": "/drivers",
+            "type": "GET",
+            "data": function (d) {
 
-function handleDriverFormSubmit() {
+                return {
+                    draw: d.draw,
+                    length: d.length || 10,
+                    start: d.start || 0,
+                    search: d.search,
+                    order: d.order
+                };
+            },
+            "dataSrc": function (json) {
+                return json.data;
+            },
+            "error": function (xhr, error, code) {
+                console.log("Error: ", error);
+            }
+        },
+        "columns": [
+            { "data": "driver_id" },
+            { "data": "driver_name" },
+            { "data": "phone" },
+            { "data": "license_number" },
+            {
+                "data": null,
+                "render": function (data, type, row) {
+                    return `
+                        <button 
+                            class="btn btn-warning btn-sm" 
+                            id = "editDriverBtn"
+                            data-id="${data.driver_id}" 
+                            data-name="${data.driver_name}" 
+                            data-phone="${data.phone}" 
+                            data-license="${data.license_number}"
+                            data-toggle="modal" 
+                            data-target="#editDriverModal">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn btn-danger btn-sm" id = "deleteDriverBtn" data-driver-id="${row.driver_id}">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>`;
+                },
+                "orderable": false
+            }
+        ],
+        "pageLength": 10,  // Số dòng hiển thị trên mỗi trang
+        "lengthMenu": [10, 25, 50, 100],  // Các tùy chọn cho số lượng dòng mỗi trang
+        "searching": true, // Cho phép tìm kiếm
+        "paging": true,    // Cho phép phân trang
+        "ordering": true,   // Cho phép sắp xếp
+        "order": [[0, "asc"]]
+    });
+}
+
+function addDriver() {
     $("#driverForm").on("submit", function (event) {
         event.preventDefault();
         var name = $("#driverName").val();
@@ -129,8 +154,8 @@ function handleDriverFormSubmit() {
                 $("#driverName").val("");
                 $("#driverPhone").val("");
                 $("#licenseNumber").val("");
-
                 $('#driverModal').modal('hide');
+                $('#driver-table').DataTable().ajax.reload();
             },
             error: function (err) {
                 alert('Error: ' + err.responseText);
@@ -140,9 +165,7 @@ function handleDriverFormSubmit() {
 }
 
 
-
-
-function initializeEditDriverModal() {
+function editDriver() {
     $(document).on('click', '#editDriverBtn', function () {
 
         const driverId = $(this).data('id');
@@ -164,7 +187,7 @@ function initializeEditDriverModal() {
         const license = $('#editLicenseNumber').val();
 
         $.ajax({
-            url: '/update-driver',
+            url: '/edit-driver',
             method: 'POST',
             data: {
                 id: id,
@@ -173,9 +196,8 @@ function initializeEditDriverModal() {
                 license: license
             },
             success: function (response) {
-                alert('Driver updated successfully!');
+                $('#driver-table').DataTable().ajax.reload();
                 $('#editDriverModal').modal('hide');
-                showDriverTable();
             },
             error: function (err) {
                 alert('Error updating driver: ' + err.responseText);
@@ -188,21 +210,22 @@ function initializeEditDriverModal() {
 
 
 
-//Coach
+//Coach_function
 function loadCoachList() {
     $('#coachContent').html(`
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h3>Coach List</h3>
-            <button class="btn btn-success" id="openCoachModalBtn"><i class="fas fa-plus"></i> Add Coach</button>
+            <button class="btn btn-success" id="openCoachModalBtn"><i class="fas fa-plus"></i> Add A Coach</button>
         </div>
         <div class="table-responsive">
-            <table class="table table-striped table-bordered">
-                <thead class="thead-dark">
+            <table id="coach-table" class="table table-striped table-bordered" style="width:100%">
+                <thead>
                     <tr>
                         <th>Coach ID</th>
                         <th>Coach Type</th>
                         <th>Seats</th>
                         <th>License Plate</th>
+                        <th>Driver Name</th>
                         <th>Coach Operator</th>
                         <th>Actions</th>
                     </tr>
@@ -210,6 +233,17 @@ function loadCoachList() {
                 <tbody id="coachTableBody">
                     <!-- Rows will be dynamically added here -->
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <th>Coach ID</th>
+                        <th>Coach Type</th>
+                        <th>Seats</th>
+                        <th>License Plate</th>
+                        <th>Driver Name</th>
+                        <th>Coach Operator</th>
+                        <th>Actions</th>
+                    </tr>
+                </tfoot>
             </table>
         </div>
     `);
@@ -219,61 +253,81 @@ function loadCoachList() {
     });
 }
 
-
-
-
 function showCoachTable() {
-    $.ajax({
-        url: '/showCoaches',
-        type: 'GET',
-        success: function (data) {
-
-            $('#coachTableBody').empty();
-
-            data.forEach(coach => {
-                $('#coachTableBody').append(`
-                <tr id =${coach.coach_id}>
-                <td>${coach.coach_id}</td>
-                <td>${coach.coach_type}</td>
-                <td>${coach.seats}</td>
-                <td>${coach.license_plate}</td>
-                <td>${coach.coach_operator}</td>
-                <td>
-                     <button 
-            class="btn btn-warning btn-sm" 
-            id = "editCoachBtn"
-            data-id="${coach.coach_id}" 
-            data-type="${coach.coach_type}" 
-            data-seats="${coach.seats}" 
-            data-license="${coach.license_plate}"
-            data-operator= "${coach.coach_operator}"
-            data-toggle="modal" 
-            data-target="#editCoachModal">
-            <i class="fas fa-edit"></i> Edit
-        </button>
-                    <button class="btn btn-danger btn-sm" id = "deleteCoachBtn">
-                        <i class="fas fa-trash"></i> Delete
-                    </button>
-                </td>
-              
-            `);
-            });
+    if ($.fn.DataTable.isDataTable('#coach-table')) {
+        $('#coach-table').DataTable().destroy();
+    }
+    $('#coach-table').DataTable({
+        "processing": true,
+        "serverSide": true,
+        "ajax": {
+            "url": "/coaches",
+            "type": "GET",
+            "data": function (d) {
+                return {
+                    draw: d.draw,
+                    length: d.length || 10,
+                    start: d.start || 0,
+                    search: d.search,
+                    order: d.order
+                };
+            },
+            "dataSrc": function (json) {
+                console.log("Received JSON:", json);
+                return json.data;
+            },
+            "error": function (xhr, error, code) {
+                console.error("Error fetching data:", error, code);
+            }
         },
-        error: function (error) {
-            console.log('Error fetching route data:', error);
-        }
+        "columns": [
+            { "data": "coach_id" },
+            { "data": "coach_type" },
+            { "data": "seats" },
+            { "data": "license_plate" },
+            { "data": "driver_name" },
+            { "data": "coach_operator" },
+            {
+                "data": null,
+                "render": function (data, type, row) {
+                    return `
+                        <button 
+                            class="btn btn-warning btn-sm edit-coach-btn"
+                            data-id="${data.coach_id}" 
+                            data-type="${data.coach_type}" 
+                            data-seats="${data.seats}" 
+                            data-license="${data.license_plate}"
+                            data-operator="${data.coach_operator}"
+                            data-toggle="modal" 
+                            data-target="#editCoachModal">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn btn-danger btn-sm delete-coach-btn"  id = "deleteCoachBtn" data-coach-id="${row.coach_id}">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>`;
+                },
+                "orderable": false
+            }
+        ],
+        "pageLength": 10,
+        "lengthMenu": [10, 25, 50, 100],
+        "searching": true,
+        "paging": true,
+        "ordering": true,
+        "order": [[0, "asc"]]
     });
 }
 
 
-function handleCoachFormSubmit() {
-    $("#coachForm").on("submit", function (event) {
+function addCoach() {
+    $('#coachForm').on('submit', function (event) {
         event.preventDefault();
 
         var type = $("#coachType").val();
         var seat = $("#seats").val();
         var license = $("#licensePlate").val();
         var operator = $("#coachOperator").val();
+        var driverId = $("#setDriverId").val();
 
         if (!type || !seat || !license || !operator) {
             alert('Please fill in all fields');
@@ -284,21 +338,22 @@ function handleCoachFormSubmit() {
             url: '/add-coach',
             method: 'POST',
             data: {
-
                 type: type,
                 seat: seat,
                 license: license,
-                operator: operator
+                operator: operator,
+                driverId: driverId
             },
             success: function (response) {
                 console.log('Coach added:', response);
-
                 $("#coachType").val("");
                 $("#seats").val("");
                 $("#licensePlate").val("");
                 $("#coachOperator").val("");
+                $('#successToastCoach').toast('show');
 
                 $('#coachModal').modal('hide');
+                $('#coach-table').DataTable().ajax.reload();
             },
             error: function (err) {
                 console.error('Error:', err);
@@ -309,6 +364,7 @@ function handleCoachFormSubmit() {
 }
 
 
+
 function deleteCoach(rowId) {
     $.ajax({
         url: '/deleteCoach',
@@ -316,7 +372,7 @@ function deleteCoach(rowId) {
         data: { id: rowId },
         success: function (response) {
             console.log('Coach deleted successfully:', response);
-            showCoachTable();
+            $('#coach-table').DataTable().ajax.reload();
         },
         error: function (err) {
             console.log('Error:', err);
@@ -325,7 +381,7 @@ function deleteCoach(rowId) {
 }
 
 
-function initializeEditCoachModal() {
+function editCoach() {
     $(document).on('click', '#editCoachBtn', function () {
 
         var coachId = $(this).data('id');
@@ -342,7 +398,7 @@ function initializeEditCoachModal() {
 
     });
 
-    $('#editCoachForm').on('submit', function (event) {
+    $(document).on('click', '#submitEditCoachBtn', function (event) {
         event.preventDefault();
         var id = $('#editCoachId').val();
         var type = $('#editCoachType').val();
@@ -362,6 +418,7 @@ function initializeEditCoachModal() {
             },
             success: function (response) {
                 alert('Coach updated successfully!');
+                $('#coach-table').DataTable().ajax.reload();
                 $('#editCoachModal').modal('hide');
             },
             error: function (err) {
@@ -371,11 +428,52 @@ function initializeEditCoachModal() {
     });
 }
 
+function searchDrivers() {
+    $('#coachDriverName').on('input', function () {
+        const query = $(this).val();
+        if (query.length > 0) {
+            $.ajax({
+                url: '/search-drivers',
+                method: 'GET',
+                data: { q: query },
+                success: function (response) {
+                    $('#driverSuggestions').empty();
+                    response.forEach(function (driver) {
+                        $('#driverSuggestions').append(`<li class="suggestion-style" id = "${driver.driver_id}">${driver.driver_name}</li>`);
+                    });
+                },
+                error: function (err) {
+                    console.error('Error fetching Driver list:', err);
+                    if (err.responseText) {
+                        console.log('Server response:', err.responseText);
+                    }
+                    alert('Error fetching Driver list');
+                }
+            });
+            $(document).on('click', '.suggestion-driver-list li', function () {
+                var selectedDriver = $(this).text();
+                var driverId = $(this).attr('id');
+                $('#setDriverId').val(driverId);
+                $('#coachDriverName').val(selectedDriver);
+                $('.suggestion-driver-list').empty();
+            });
+
+            $('#coachDriverName').on('blur', function () {
+                var enteredValue = $(this).val();
+                if (!driverSuggestions.includes(enteredValue)) {
+                    alert('Giá trị bạn nhập không tồn tại trong danh sách gợi ý.');
+                    $(this).val('');
+                }
+            });
+        } else {
+            $('#driverSuggestions').empty();
+        }
+    });
+}
 
 
 
-
-//Route
+//Route_function
 
 function loadRouteList() {
     $('#routeContent').html(`
@@ -384,8 +482,8 @@ function loadRouteList() {
             <button class="btn btn-success" id="openRouteModalBtn"><i class="fas fa-plus"></i> Add A Route</button>
         </div>
         <div class="table-responsive">
-            <table class="table table-striped table-bordered">
-                <thead class="thead-dark">
+            <table id="route-table" class="table table-striped table-bordered" style="width:100%">
+                <thead>
                     <tr>
                         <th>Route ID</th>
                         <th>Coach License</th>
@@ -393,14 +491,26 @@ function loadRouteList() {
                         <th>Arrival Time</th>
                         <th>Depature Point</th>
                         <th>Arrival Point</th>
-                        <th>Date</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody id="routeTableBody">
                     <!-- Rows will be dynamically added here -->
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <th>Route ID</th>
+                        <th>Coach License</th>
+                        <th>Depature Time</th>
+                        <th>Arrival Time</th>
+                        <th>Depature Point</th>
+                        <th>Arrival Point</th>
+                        <th>Price</th>
+                        <th>Actions</th>
+                    </tr>
+                </tfoot>
             </table>
+            
         </div>
     `);
 
@@ -409,37 +519,21 @@ function loadRouteList() {
     });
 }
 
-function handleRouteFormSubmit() {
+function addRoute() {
     $("#routeForm").on("submit", function (event) {
         event.preventDefault();
-
-        var license = $("#coachLicensePlate").val();
-        var departureTime = $("#departureTime").val();
-        var arrivalTime = $("#arrivalTime").val();
-        var departurePoint = $("#departurePoint").val();
-        var arrivalPoint = $("#arrivalPoint").val();
-        var routeDate = $("#routeDate").val();
-        var formattedDate = moment(routeDate).format('YYYY-MM-DD');
-
-
-        if (!license || !departureTime || !arrivalTime || !departurePoint || !arrivalPoint || !routeDate) {
-            alert('Please fill in all fields');
-            return;
+        routeData = {
+            departureTime: $("#departureTime").val(),
+            arrivalTime: $("#arrivalTime").val(),
+            departurePoint: $("#departurePoint").val(),
+            arrivalPoint: $("#arrivalPoint").val(),
+            license: $("#coachLicensePlate").val(),
+            price: $("#routePrice").val()
         }
-
         $.ajax({
             url: '/add-route',
             method: 'POST',
-            data: {
-
-                license: license,
-                departureTime: departureTime,
-                arrivalTime: arrivalTime,
-                departurePoint: departurePoint,
-                arrivalPoint: arrivalPoint,
-                arrivalTime: arrivalTime,
-                routeDate: formattedDate
-            },
+            data: routeData,
             success: function (response) {
                 console.log('route added:', response);
 
@@ -451,6 +545,8 @@ function handleRouteFormSubmit() {
                 $("#routeDate").val("");
 
                 $('#routeModal').modal('hide');
+                $('#successToastRoute').toast('show');
+                $('#route-table').DataTable().ajax.reload();
             },
             error: function (err) {
                 console.error('Error:', err);
@@ -474,51 +570,67 @@ function formatTime(time) {
 }
 
 function showRouteTable() {
-    $.ajax({
-        url: '/showRoutes',
-        type: 'GET',
-        success: function (data) {
-            $('#routeTableBody').empty();
-
-            data.forEach(route => {
-                var formattedDate = moment(route.date).format('DD-MM-YYYY');
-                var formatDepatureTime = formatTime(route.departure_time);
-                var formatArrivalTime = formatTime(route.arrival_time);
-                $('#routeTableBody').append(`
-                <tr id =${route.route_id}>
-                <td>${route.route_id}</td>
-                <td>${route.coach_license_plate}</td>
-                <td>${formatDepatureTime}</td>
-                <td>${formatArrivalTime}</td>
-                <td>${route.departure_point}</td>
-                <td>${route.arrival_point}</td>
-                <td>${formattedDate}</td>
-                <td>
-                     <button 
-            class="btn btn-warning btn-sm" 
-            id = "editRouteBtn"
-            data-id="${route.route_id}" 
-            data-license="${route.coach_license_plate}" 
-            data-departureTime="${route.departure_time}" 
-            data-arrivalTime="${route.arrival_time}"
-            data-departurePoint= "${route.departure_point}"
-            data-arrivalPoint= "${route.arrival_point}"
-            data-date= "${route.date}"
-            data-toggle="modal" 
-            data-target="#editRouteModal">
-            <i class="fas fa-edit"></i> Edit
-        </button>
-                    <button class="btn btn-danger btn-sm" id = "deleteRouteBtn" >
-                        <i class="fas fa-trash"></i> Delete
-                    </button>
-                </td>
-              
-            `);
-            });
+    $('#route-table').DataTable({
+        "processing": true,
+        "serverSide": true,
+        "ajax": {
+            "url": "/routes",
+            "type": "GET",
+            "data": function (d) {
+                return {
+                    draw: d.draw,
+                    length: d.length || 10,
+                    start: d.start || 0,
+                    search: d.search,
+                    order: d.order
+                };
+            },
+            "dataSrc": function (json) {
+                return json.data;
+            },
+            "error": function (xhr, error, code) {
+                console.log("Error: ", error);
+            }
         },
-        error: function (error) {
-            console.log('Error fetching route data:', error);
-        }
+        "columns": [
+            { "data": "route_id" },
+            { "data": "coach_license_plate" },
+            { "data": "departure_time" },
+            { "data": "arrival_time" },
+            { "data": "departure_point" },
+            { "data": "arrival_point" },
+            { "data": "price" },
+            {
+                "data": null,
+                "render": function (data, type, row) {
+                    return `
+                        <button 
+                            class="btn btn-warning btn-sm" 
+                            id = "editRouteBtn"
+                            data-id="${data.route_id}" 
+                            data-license="${data.coach_license_plate}" 
+                            data-departureTime="${data.departure_time}" 
+                            data-arrivalTime="${data.arrival_time}"
+                            data-departurePoint= "${data.departure_point}"
+                            data-arrivalPoint= "${data.arrival_point}"
+                            data-price= "${data.price}"
+                            data-toggle="modal" 
+                            data-target="#editRouteModal">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn btn-danger btn-sm" id = "deleteRouteBtn" data-route-id="${row.route_id}">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>`;
+                },
+                "orderable": false
+            }
+        ],
+        "pageLength": 10,
+        "lengthMenu": [10, 25, 50, 100],
+        "searching": true,
+        "paging": true,
+        "ordering": true,
+        "order": [[0, "asc"]]
     });
 }
 
@@ -528,7 +640,7 @@ function deleteRoute(rowId) {
         method: 'POST',
         data: { id: rowId },
         success: function (response) {
-            console.log('Route deleted successfully:', response);
+            $('#route-table').DataTable().ajax.reload();
         },
         error: function (err) {
             console.log('Error:', err);
@@ -537,8 +649,7 @@ function deleteRoute(rowId) {
 }
 
 
-
-function initializeEditRouteModal() {
+function editRoute() {
     $(document).on('click', '#editRouteBtn', function () {
 
         var routeId = $(this).data('id');
@@ -547,7 +658,9 @@ function initializeEditRouteModal() {
         var arrivalTime = $(this).data('arrivalTime');
         var departurePoint = $(this).data('departurePoint');
         var arrivalPoint = $(this).data('arrivalPoint');
-        var date = $(this).data('date');
+        var price = $(this).data('price');
+
+
 
 
         $('#editRouteId').val(routeId);
@@ -556,7 +669,7 @@ function initializeEditRouteModal() {
         $('#editArrivalTime').val(arrivalTime);
         $('#editDeparturePoint').val(departurePoint);
         $('#editArrivalPoint').val(arrivalPoint);
-        $('#editRouteDate').val(date);
+        $('#editRoutePrice').val(price);
 
     });
 
@@ -568,8 +681,17 @@ function initializeEditRouteModal() {
         var arrivalTime = $("#editArrivalTime").val();
         var departurePoint = $("#editDeparturePoint").val();
         var arrivalPoint = $("#editArrivalPoint").val();
-        var routeDate = $("#editRouteDate").val();
+        var price = $("#editRoutePrice").val();
 
+        console.log('Clicked route data:', {
+            routeId: routeId,
+            license: license,
+            departureTime: departureTime,
+            arrivalTime: arrivalTime,
+            departurePoint: departurePoint,
+            arrivalPoint: arrivalPoint,
+            price: price
+        });
 
         $.ajax({
             url: '/update-route',
@@ -581,10 +703,11 @@ function initializeEditRouteModal() {
                 arrivalTime: arrivalTime,
                 departurePoint: departurePoint,
                 arrivalPoint: arrivalPoint,
-                routeDate: routeDate
+                price: price
             },
             success: function (response) {
-                alert('Route updated successfully!');
+                console.log(response);
+                $('#route-table').DataTable().ajax.reload();
                 $('#editRouteModal').modal('hide');
             },
             error: function (err) {
@@ -598,18 +721,15 @@ function initializeEditRouteModal() {
 function searchLicense() {
     $('#coachLicensePlate').on('input', function () {
         const query = $(this).val();
-
-
         if (query.length > 0) {
             $.ajax({
                 url: '/search-coaches',
                 method: 'GET',
                 data: { q: query },
                 success: function (response) {
-                    $('#suggestions').empty();
-
+                    $('#coachSuggestions').empty();
                     response.forEach(function (coach) {
-                        $('#suggestions').append(`<li class ="coach-license-suggestion">${coach.license_plate}</li>`);
+                        $('#coachSuggestions').append(`<li class="suggestion-style" id = "${coach.coach_id}">${coach.license_plate}</li>`);
                     });
                 },
                 error: function (err) {
@@ -620,39 +740,31 @@ function searchLicense() {
                     alert('Error fetching coach list');
                 }
             });
-            $(document).on('click', '.suggestion-list li', function () {
+            $(document).on('click', '.suggestion-coach-list li', function () {
                 var selectedLicensePlate = $(this).text();
+                console.log(selectedLicensePlate);
+                var coachId = $(this).attr('id');
+                $('#addCoachId').text(coachId);
                 $('#coachLicensePlate').val(selectedLicensePlate);
-                $('.suggestion-list').empty();
+                $('.suggestion-coach-list').empty();
             });
 
             $('#coachLicensePlate').on('blur', function () {
                 var enteredValue = $(this).val();
-
                 if (!suggestions.includes(enteredValue)) {
                     alert('Giá trị bạn nhập không tồn tại trong danh sách gợi ý.');
                     $(this).val('');
                 }
             });
         } else {
-            $('#suggestions').empty();
+            $('#coachSuggestions').empty();
         }
     });
 }
 
-function chooseSuggestion() {
-    $(document).on('click', '.suggestion-list li', function () {
-        var selectedLicensePlate = $(this).text();
-
-        $('#coachLicensePlate').val(selectedLicensePlate);
-
-        $('.suggestion-list').empty();
-    });
-}
 
 
-
-//client
+//Client_function
 
 function loadClientList() {
     $('#clientContent').html(`
@@ -661,20 +773,32 @@ function loadClientList() {
             <button class="btn btn-success" id="openClientModalBtn"><i class="fas fa-plus"></i> Add Client</button>
         </div>
         <div class="table-responsive">
-            <table class="table table-striped table-bordered">
-                <thead class="thead-dark">
+            <table id="client-table" class="table table-striped table-bordered">
+                <thead>
                     <tr>
                         <th>Client ID</th>
                         <th>Name</th>
                         <th>Phone Number</th>
                         <th>Email</th>
                         <th>Rank</th>
+                        <th>Expense</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody id="clientTableBody">
                     <!-- Rows will be dynamically added here -->
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <th>Client ID</th>
+                        <th>Name</th>
+                        <th>Phone Number</th>
+                        <th>Email</th>
+                        <th>Rank</th>
+                        <th>Expense</th>
+                        <th>Actions</th>
+                    </tr>
+                </tfoot>
             </table>
         </div>
     `);
@@ -685,52 +809,69 @@ function loadClientList() {
 }
 
 
-
-
 function showClientTable() {
-    $.ajax({
-        url: '/showClients',
-        type: 'GET',
-        success: function (data) {
-
-            $('#clientTableBody').empty();
-
-            data.forEach(client => {
-                $('#clientTableBody').append(`
-                <tr id =${client.client_id}>
-                <td>${client.client_id}</td>
-                <td>${client.client_name}</td>
-                <td>${client.phone_number}</td>
-                <td>${client.email}</td>
-                <td>${client.rank}</td>
-                <td>
-                     <button 
-            class="btn btn-warning btn-sm" 
-            id = "editClientBtn"
-            data-id="${client.client_id}" 
-            data-name="${client.client_name}" 
-            data-number="${client.phone_number}" 
-            data-email="${client.email}"
-            data-toggle="modal" 
-            data-target="#editClientModal">
-            <i class="fas fa-edit"></i> Edit
-        </button>
-                    <button class="btn btn-danger btn-sm" id = "deleteClientBtn">
-                        <i class="fas fa-trash"></i> Delete
-                    </button>
-                </td>
-              
-            `);
-            });
+    $('#client-table').DataTable({
+        "processing": true,
+        "serverSide": true,
+        "ajax": {
+            "url": "/clients",
+            "type": "GET",
+            "data": function (d) {
+                return {
+                    draw: d.draw,
+                    length: d.length || 10,
+                    start: d.start || 0,
+                    search: d.search,
+                    order: d.order
+                };
+            },
+            "dataSrc": function (json) {
+                return json.data;
+            },
+            "error": function (xhr, error, code) {
+                console.log("Error: ", error);
+            }
         },
-        error: function (error) {
-            console.log('Error fetching route data:', error);
-        }
+        "columns": [
+            { "data": "client_id" },
+            { "data": "client_name" },
+            { "data": "phone_number" },
+            { "data": "email" },
+            { "data": "rank" },
+            { "data": "expense" },
+            {
+                "data": null,
+                "render": function (data, type, row) {
+                    return `
+                        <button 
+                            class="btn btn-warning btn-sm" 
+                            id = "editClientBtn"
+                            data-id="${data.client_id}" 
+                            data-name="${data.client_name}" 
+                            data-number="${data.phone_number}" 
+                            data-email="${data.email}"
+                            data-toggle="modal" 
+                            data-target="#editClientModal">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button class="btn btn-danger btn-sm" id = "deleteClientBtn" data-client-id="${row.client_id}">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>`;
+                },
+                "orderable": false
+            }
+        ],
+        "pageLength": 10,
+        "lengthMenu": [10, 25, 50, 100],
+        "searching": true,
+        "paging": true,
+        "ordering": true,
+        "order": [[0, "asc"]]
     });
 }
 
 
-function handleCoachFormSubmit() {
+function addClient() {
     $("#clientForm").on("submit", function (event) {
         event.preventDefault();
 
@@ -748,11 +889,9 @@ function handleCoachFormSubmit() {
             url: '/add-client',
             method: 'POST',
             data: {
-
                 clientName: clientName,
                 clientPhoneNumber: clientPhoneNumber,
                 clientEmail: clientEmail,
-
             },
             success: function (response) {
                 console.log('Client added:', response);
@@ -762,6 +901,8 @@ function handleCoachFormSubmit() {
                 $("#clientEmail").val("");
 
                 $('#clientModal').modal('hide');
+                $('#successToastRoute').toast('show');
+                $('#client-table').DataTable().ajax.reload();
             },
             error: function (err) {
                 console.error('Error:', err);
@@ -779,6 +920,7 @@ function deleteClient(rowId) {
         data: { id: rowId },
         success: function (response) {
             console.log('Client deleted successfully:', response);
+            $('#client-table').DataTable().ajax.reload();
         },
         error: function (err) {
             console.log('Error:', err);
@@ -787,7 +929,7 @@ function deleteClient(rowId) {
 }
 
 
-function initializeEditClientModal() {
+function editClient() {
     $(document).on('click', '#editClientBtn', function () {
 
         var clientId = $(this).data('id');
@@ -819,8 +961,8 @@ function initializeEditClientModal() {
                 clientEmail: clientEmail,
             },
             success: function (response) {
-                alert('Client updated successfully!');
                 $('#editClientModal').modal('hide');
+                $('#client-table').DataTable().ajax.reload();
             },
             error: function (err) {
                 alert('Error updating Coach: ' + err.responseText);
@@ -830,22 +972,466 @@ function initializeEditClientModal() {
 }
 
 
+// Booking_function
+function showBookingTable() {
+    $('#booking-table').DataTable({
+        "processing": true,
+        "serverSide": true,
+        "ajax": {
+            "url": "/bookings", // Cập nhật URL đúng với controller
+            "type": "GET",
+            "data": function (d) {
+                return {
+                    draw: d.draw,
+                    length: d.length || 10,
+                    start: d.start || 0,
+                    search: d.search,
+                    order: d.order
+                };
+            },
+            "dataSrc": function (json) {
+                return json.data;
+            },
+            "error": function (xhr, error, code) {
+                console.error("Error loading bookings:", error, code);
+            }
+        },
+        "columns": [
+            { "data": "booking_id" },
+            { "data": "client_name" },
+            { "data": "seat_number" },
+            { "data": "booking_date" },
+            { "data": "order_status" },
+            {
+                "data": null,
+                "render": function (data, type, row) {
+                    return `
+                        <button 
+                            class="btn btn-warning btn-sm confirm-btn" 
+                            data-booking-id="${row.booking_id}">
+                            <i class="fas fa-edit"></i> Confirm
+                        </button>
+                        <button 
+                            class="btn btn-danger btn-sm cancel-btn" 
+                            data-booking-id="${row.booking_id}">
+                            <i class="fas fa-trash"></i> Cancel
+                        </button>`;
+                },
+                "orderable": false
+            }
+        ],
+        "pageLength": 10,
+        "lengthMenu": [10, 25, 50, 100],
+        "searching": true,
+        "paging": true,
+        "ordering": true,
+        "order": [[0, "asc"]]
+    });
+
+    $('#booking-table').on('click', '.confirm-btn', function () {
+        const bookingId = $(this).data('booking-id');
+        confirmBooking(bookingId);
+    });
+
+    $('#booking-table').on('click', '.cancel-btn', function () {
+        const bookingId = $(this).data('booking-id');
+        cancelBooking(bookingId);
+    });
+}
+
+function confirmBooking(bookingId) {
+    $.ajax({
+        url: '/update-booking-status',
+        method: 'POST',
+        data: {
+            bookingId: bookingId,
+            orderStatus: 'paid'
+        },
+        success: function (response) {
+            alert('Payment confirmed successfully!');
+            $('#booking-table').DataTable().ajax.reload();
+        },
+        error: function (err) {
+            console.error('Error confirming payment:', err);
+            alert('Error confirming payment: ' + (err.responseText || 'Unknown error'));
+        }
+    });
+}
 
 
-// admin
+function cancelBooking(bookingId) {
+    $.ajax({
+        url: '/update-booking-status',
+        method: 'POST',
+        data: {
+            bookingId: bookingId,
+            orderStatus: 'cancelled'
+        },
+        success: function (response) {
+            alert('Booking cancelled successfully!');
+            $('#booking-table').DataTable().ajax.reload();
+        },
+        error: function (err) {
+            console.error('Error cancelling booking:', err);
+            alert('Error cancelling booking: ' + (err.responseText || 'Unknown error'));
+        }
+    });
+}
+
+
+function loadBookingList() {
+    $('#bookingContent').html(`
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3>Booking</h3>
+            <button class="btn btn-success" id="openBookingModalBtn"><i class="fas fa-plus"></i> Add A Booking</button>
+        </div>
+        <div class="table-responsive">
+            <table id="booking-table" class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>Booking Code</th>
+                        <th>Customer's Name</th>
+                        <th>Seat number</th>
+                        <th>Booked Date</th>
+                        <th>Booking Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="bookingTableBody">
+                    <!-- Rows will be dynamically added here -->
+                </tbody>
+                <tfoot>
+                    <tr>
+                       <th>Booking Code</th>
+                        <th>Customer's Name</th>
+                        <th>Seat number</th>
+                        <th>Booked Date</th>
+                        <th>Booking Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    `);
+
+    $("#openBookingModalBtn").on("click", function () {
+
+        $('#bookingModal').modal('show');
+    });
+}
+
+function searchClients() {
+    $('#clientNameSearch').on('input', function () {
+        const query = $(this).val();
+        if (query.length > 0) {
+            $.ajax({
+                url: '/search-clients',
+                method: 'GET',
+                data: { q: query },
+                success: function (response) {
+                    $('#clientSuggestions').empty();
+                    response.forEach(function (client) {
+                        $('#setClientID').val(client.client_id);
+                        $('#clientSuggestions').append(`<li class="suggestion-style" id = "${client.client_id}">${client.client_name}</li>`);
+                    });
+                },
+                error: function (err) {
+                    console.error('Error fetching Client list:', err);
+                    if (err.responseText) {
+                        console.log('Server response:', err.responseText);
+                    }
+                    alert('Error fetching client list');
+                }
+            });
+            $(document).on('click', '.suggestion-client-list li', function () {
+                var selectedClient = $(this).text();
+                var clientId = $(this).attr('id');
+                $('#setClientId').val(clientId);
+                $('#clientNameSearch').val(selectedClient);
+                $('.suggestion-client-list').empty();
+            });
+
+            $('#clientNameSearch').on('blur', function () {
+                var enteredValue = $(this).val();
+                if (!suggestions.includes(enteredValue)) {
+                    alert('Giá trị bạn nhập không tồn tại trong danh sách gợi ý.');
+                    $(this).val('');
+                }
+            });
+        } else {
+            $('#clientNameSearch').empty();
+        }
+    });
+}
+
+
+
+function searchRoutes() {
+    let selectedRoute = null;
+    let basePrice = 0;
+    let selectedDate = '';
+
+    const today = new Date().toISOString().split('T')[0];
+    $('#departureDate').attr('min', today);
+
+    $('#routeDetails').on('input', function () {
+        const query = $(this).val();
+        if (query.length > 0) {
+            $.ajax({
+                url: '/search-routes',
+                method: 'GET',
+                data: { q: query },
+                success: function (response) {
+                    console.log('Routes response:', response);
+                    $('#routeSuggestions').empty();
+                    response.forEach(function (route) {
+                        console.log('Appending route with route_id:', route.route_id);
+                        $('#routeSuggestions').append(`
+                            <li class="suggestion-style searchRoute" id="${route.route_id}" 
+                                data-departure="${route.departure_point}" 
+                                data-arrival="${route.arrival_point}"
+                                data-seats="${route.seats}"
+                                data-routeId="${route.route_id}"
+                                data-price="${route.price}">
+                                <div>
+                                    <h2>${route.coach_operator}</h2>
+                                    <p>${route.departure_point} -> ${route.arrival_point}</p>
+                                </div>
+                            </li>
+                        `);
+                    });
+                },
+                error: function (err) {
+                    console.error('Error fetching Route list:', err);
+                    alert('Error fetching Route list');
+                }
+            });
+        } else {
+            $('#routeSuggestions').empty();
+        }
+    });
+
+    $(document).on('click', '.searchRoute', function () {
+        console.log('searchRoute clicked:', this);
+        console.log('Raw HTML attributes:', $(this).attr('data-routeId'), $(this).data('routeId'));
+
+        var rawCheckDate = $('#departureDate').val();
+        var checkDate = rawCheckDate ? new Date(rawCheckDate).toISOString().split('T')[0] : '';
+        var departurePoint = $(this).data('departure');
+        var arrivalPoint = $(this).data('arrival');
+        var seatNumber = parseInt($(this).data('seats'));
+        var routeId = $(this).data('routeId');
+        var price = parseFloat($(this).data('price') || 0);
+
+        if (!routeId) {
+            routeId = $(this).attr('data-routeId');
+        }
+        if (!routeId) {
+            routeId = $(this).prop('dataset').routeId;
+        }
+
+        console.log('Clicked route data:', { routeId, departurePoint, arrivalPoint, seatNumber, price, checkDate });
+
+        if (!routeId) {
+            alert('Invalid route selected. Please try again.');
+            console.error('Route ID is undefined or invalid after all attempts');
+            return;
+        }
+
+        selectedRoute = { departurePoint, arrivalPoint, seatNumber, routeId };
+        basePrice = price;
+        selectedDate = checkDate;
+
+        $('#routeDetails').val(departurePoint + " -> " + arrivalPoint);
+        $('#setRouteID').val(routeId);
+        $('#bookingPrice').val(basePrice);
+        $('#routeSuggestions').empty();
+        $('#seatNumberDisplay').text('No seats selected');
+        $('#seatNumber').val('');
+
+        renderSeats(routeId, checkDate, seatNumber);
+    });
+
+    $('#departureDate').on('change', function () {
+        var rawCheckDate = $(this).val();
+        var checkDate = rawCheckDate ? new Date(rawCheckDate).toISOString().split('T')[0] : '';
+
+        console.log('Date changed:', { checkDate, selectedRoute });
+
+        selectedDate = checkDate;
+
+        if (!selectedRoute) {
+            console.log('No route selected yet, waiting for route selection.');
+            return;
+        }
+
+        if (!rawCheckDate) {
+            alert("Please select a departure date to check seat availability.");
+            renderSeats(selectedRoute.routeId, '', selectedRoute.seatNumber);
+        } else {
+            renderSeats(selectedRoute.routeId, checkDate, selectedRoute.seatNumber);
+        }
+    });
+
+    function renderSeats(routeId, checkDate, seatNumber) {
+        if (!routeId) {
+            console.warn('renderSeats called without routeId');
+            return;
+        }
+
+        console.log('Sending request to /get-booked-seats:', { routeId, bookingDate: checkDate });
+
+        $.ajax({
+            url: '/get-booked-seats',
+            method: 'GET',
+            data: {
+                routeId: routeId,
+                bookingDate: checkDate || ''
+            },
+            success: function (bookedSeats) {
+                console.log('Booked seats for route', routeId, 'on', checkDate, ':', bookedSeats);
+                var seatForm = $('.seat-form');
+                seatForm.empty();
+
+                seatForm.append(`
+                    <div class="bus-layout">
+                        <h3>Upper Deck</h3>
+                        <div class="upper-deck seats-container"></div>
+                        <h3>Lower Deck</h3>
+                        <div class="lower-deck seats-container"></div>
+                    </div>
+                `);
+
+                var upperDeck = $('.upper-deck');
+                var lowerDeck = $('.lower-deck');
+
+                $('#seatNumberDisplay').text('No seats selected');
+                $('#seatNumber').val('');
+                $('#bookingPrice').val(basePrice);
+
+                for (var i = 1; i <= seatNumber; i++) {
+                    var isBooked = bookedSeats && bookedSeats.includes(i);
+                    var seatClass = isBooked ? 'seat booked' : 'seat available';
+                    var seatHtml = `
+                        <div class="${seatClass}">
+                            <input type="checkbox" id="seat-${i}" name="seat-${i}" value="${i}" ${isBooked ? 'disabled' : ''}>
+                            <label for="seat-${i}">Seat ${i}</label>
+                        </div>
+                    `;
+                    if (i % 2 === 0) {
+                        upperDeck.append(seatHtml);
+                    } else {
+                        lowerDeck.append(seatHtml);
+                    }
+                }
+                $(document).off('change', '.seat.available input[type="checkbox"]');
+                $(document).on('change', '.seat.available input[type="checkbox"]', function () {
+                    var selectedSeats = [];
+                    $('.seat.available input[type="checkbox"]:checked').each(function () {
+                        selectedSeats.push($(this).val());
+                    });
+                    const seatString = selectedSeats.length > 0 ? selectedSeats.join(', ') : 'No seats selected';
+                    $('#seatNumberDisplay').text(seatString);
+                    $('#seatNumber').val(selectedSeats.join(', '));
+
+                    const numSeats = selectedSeats.length;
+                    const totalPrice = numSeats > 0 ? basePrice * numSeats : basePrice;
+                    $('#bookingPrice').val(totalPrice.toFixed(2));
+                });
+            },
+            error: function (err) {
+                console.error('Error fetching booked seats:', err.status, err.statusText, err.responseText);
+                alert('Error fetching booked seats: ' + (err.responseText || 'Unknown error'));
+            }
+        });
+    }
+
+    $('#bookingForm').on('submit', function (e) {
+        e.preventDefault();
+        const $submitBtn = $('#submitBookingBtn');
+        const $btnText = $('#btnText');
+        const $spinner = $('#loadingSpinner');
+        $submitBtn.prop('disabled', true);
+        $btnText.hide();
+        $spinner.show();
+        const bookingData = {
+            clientId: $('#setClientID').val(),
+            routeId: $('#setRouteID').val(),
+            departureDate: $('#departureDate').val(),
+            price: $('#bookingPrice').val(),
+            seatNumber: $('#seatNumber').val()
+        };
+
+        $.ajax({
+            url: '/add-booking',
+            method: 'POST',
+            data: bookingData,
+            success: function (response) {
+                alert('Booking added successfully! Booking ID: ' + response.bookingId);
+                $('#bookingModal').modal('hide');
+                $('#bookingForm')[0].reset();
+                $('#seatNumberDisplay').text('No seats selected');
+                selectedRoute = null;
+                basePrice = 0;
+                $('.bus-layout').empty();
+                $('#booking-table').DataTable().ajax.reload();
+            },
+            error: function (err) {
+                console.error('Error adding booking:', err);
+                alert('Error adding booking.');
+            },
+            complete: function () {
+
+                $submitBtn.prop('disabled', false);
+                $btnText.show();
+                $spinner.hide();
+            }
+        });
+    });
+}
+
+
+// Admin_function
+function loadAdminContent() {
+    $('#adminContent').html(`
+        <div class="form-container">
+                    <h2 class="form-title">Add Admin Account</h2>
+                    <form id="adminForm">
+                        <div class="mb-3">
+                            <label for="admin-name" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="admin-name" placeholder="Enter full name" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="admin-username" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="admin-username" placeholder="Enter username" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="admin-password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="admin-password" placeholder="Enter password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="admin-confirmPassword" class="form-label">Confirm Password</label>
+                            <input type="password" class="form-control" id="admin-confirmPassword" placeholder="Confirm password" required>
+                        </div>
+                        <button type="submit" class="btn btn-custom" id = "createAdminBtn">Create Account</button>
+                    </form>
+                </div>
+    `);
+}
 
 function registerAdmin() {
-    $("#adminForm").on("submit", function (event) {
+    $(document).on("click", "#createAdminBtn", function (event) {
         event.preventDefault();
+
 
         const username = $('#admin-username').val();
         const password = $('#admin-password').val();
         const confirmPassword = $('#admin-confirmPassword').val();
         const name = $('#admin-name').val();
-        console.log(username);
 
 
-        // Kiểm tra điều kiện đầu vào
         if (username.length === 0) {
             alert("Please enter your username!");
         } else if (password.length === 0) {
@@ -874,83 +1460,129 @@ function registerAdmin() {
     });
 }
 
-function loadAdminContent() {
-    $('#adminContent').html(`
-        <div class="form-container">
-                    <h2 class="form-title">Add Admin Account</h2>
-                    <form id="adminForm">
-                        <div class="mb-3">
-                            <label for="name" class="form-label">Name</label>
-                            <input type="text" class="form-control" id="admin-name" placeholder="Enter full name" required>
-                        </div>
 
-                        <div class="mb-3">
-                            <label for="username" class="form-label">Username</label>
-                            <input type="text" class="form-control" id="admin-username" placeholder="Enter username" required>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="admin-password" placeholder="Enter password" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="confirmPassword" class="form-label">Confirm Password</label>
-                            <input type="password" class="form-control" id="admin-confirmPassword" placeholder="Confirm password" required>
-                        </div>
-                        <button type="submit" class="btn btn-custom">Create Account</button>
-                    </form>
-                </div>
-    `);
+
+
+// Dashboard
+function loadDashboardData() {
+    $.ajax({
+        url: '/totalDrivers',
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            $('#totalDrivers').text(data.totalDrivers);
+        },
+        error: function (error) {
+            console.error('Error fetching dashboard data:', error);
+        }
+    });
+    $.ajax({
+        url: '/totalCoaches',
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            $('#totalCoaches').text(data.totalCoaches);
+        },
+        error: function (error) {
+            console.error('Error fetching dashboard data:', error);
+        }
+    });
+
+    $.ajax({
+        url: '/totalAdmins',
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            $('#totalAdmins').text(data.totalAdmins);
+        },
+        error: function (error) {
+            console.error('Error fetching dashboard data:', error);
+        }
+    });
+
+    $.ajax({
+        url: '/totalClients',
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            $('#totalClients').text(data.totalClients);
+        },
+        error: function (error) {
+            console.error('Error fetching dashboard data:', error);
+        }
+    });
+
+    $.ajax({
+        url: '/totalRoutes',
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            $('#totalRoutes').text(data.totalRoutes);
+        },
+        error: function (error) {
+            console.error('Error fetching dashboard data:', error);
+        }
+    });
 }
-
-
 
 
 $(document).ready(function () {
 
+    registerAdmin();
     menuStatus();
 
+    // Dashboard_function
+    loadDashboardData();
+
+    $(document).on('click', '#dashboard-link', function () {
+        hideContent();
+        $('#dashboardContent').show();
+        loadDashboardData();
+
+    });
+
+
+    //Driver_function
     $(document).on('click', '#driver-link', function () {
         hideContent();
         $('#driverContent').show();
         loadDriverList();
+        showDriverTable();
     });
 
     $(document).on('click', '#deleteDriverBtn', function () {
-        var tr = $(this).closest('tr');
-        var rowId = tr.attr('id');
-        if (confirm('Are you sure you want to delete this driver?')) {
-            deleteDriver(rowId);
-        }
+        const driverId = $(this).data('driver-id');
+        $('#confirmDeleteDriverModal').modal('show');
+        $('#confirmDeleteDriverBtn').on('click', function () {
+            deleteDriver(driverId);
+            $('#confirmDeleteDriverModal').modal('hide');
+        });
+
     });
 
+    addDriver();
+    editDriver();
+    searchDrivers();
 
-    handleDriverFormSubmit();
-    setInterval(showDriverTable, 100);
-    initializeEditDriverModal();
 
-
-    //Coach
+    //Coach_function
     $(document).on('click', '#coach-link', function () {
-
         hideContent();
         $('#coachContent').show();
         loadCoachList();
+        showCoachTable();
     });
 
     $(document).on('click', '#deleteCoachBtn', function () {
-        var tr = $(this).closest('tr');
-        var rowId = tr.attr('id');
-        if (confirm('Are you sure you want to delete this coach?')) {
-            deleteCoach(rowId);
-        }
-
-
+        const coachId = $(this).data('coach-id');
+        $('#confirmDeleteCoachModal').modal('show');
+        $('#confirmDeleteCoachBtn').on('click', function () {
+            deleteCoach(coachId);
+            $('#confirmDeleteCoachModal').modal('hide');
+        });
     });
-
-    handleCoachFormSubmit();
-    setInterval(showCoachTable, 100);
-    initializeEditCoachModal();
+    addCoach();
+    editCoach();
 
 
 
@@ -959,57 +1591,61 @@ $(document).ready(function () {
         hideContent();
         $('#routeContent').show();
         loadRouteList();
+        showRouteTable();
     });
-    handleRouteFormSubmit();
-    setInterval(showRouteTable, 100);
-    initializeEditRouteModal();
+    addRoute();
+    editRoute();
     searchLicense();
-    chooseSuggestion();
+
 
     $(document).on('click', '#deleteRouteBtn', function () {
-        var tr = $(this).closest('tr');
-        var rowId = tr.attr('id');
-        if (confirm('Are you sure you want to delete this route?')) {
-            deleteRoute(rowId);
-        }
+        const routeId = $(this).data('route-id');
+        $('#confirmDeleteRouteModal').modal('show');
+        $('#confirmDeleteRouteBtn').on('click', function () {
+            deleteRoute(routeId);
+            $('#confirmDeleteRouteModal').modal('hide');
+        });
 
     });
 
 
-
-    //Client
-
+    //Client_function
     $(document).on('click', '#client-link', function () {
         hideContent();
         $('#clientContent').show();
         loadClientList();
+        showClientTable();
     });
 
-    setInterval(showClientTable, 100);
+    addClient();
+    editClient();
+    $(document).on('click', '#deleteClientBtn', function () {
+        const clientId = $(this).data('client-id');
+        $('#confirmDeleteClientModal').modal('show');
+        $('#confirmDeleteClientBtn').on('click', function () {
+            deleteClient(clientId);
+            $('#confirmDeleteClientModal').modal('hide');
+        });
+    });
 
 
-
+    //booking
+    $(document).on('click', '#booking-link', function () {
+        hideContent();
+        $('#bookingContent').show();
+        loadBookingList();
+        showBookingTable();
+    });
+    searchClients();
+    searchRoutes();
 
 
 
     // admin
     $(document).on('click', '#admin-link', function () {
-
         hideContent();
         $('#adminContent').show();
         loadAdminContent();
     });
-    registerAdmin();
-    $(document).on('click', '#deleteClientBtn', function () {
-        var tr = $(this).closest('tr');
-        var rowId = tr.attr('id');
-        if (confirm('Are you sure you want to delete this client?')) {
-            deleteClient(rowId);
-        }
-
-    });
-    initializeEditClientModal();
-
-
 
 });

@@ -5,30 +5,27 @@ const userModel = require('../models/userModels');
 const login = async (req, res) => {
   const { username, password } = req.body;
   try {
-
     let user = await userModel.findUserByUsername(username);
-    
+
     if (!user) {
       user = await userModel.findAdminByUsername(username);
       if (user && user.admin_password === password) {
-    
-        return res.status(200).json({ message: 'Login successfully', type: 'admin' });
+        return res.status(200).json({ message: 'Login successfully', type: 'admin', user });
       } else {
-  
         return res.status(400).json({ message: 'Username or password is incorrect!' });
       }
     }
 
     if (user.client_password === password) {
-      return res.status(200).json({ message: 'Login successfully', type: 'user' });
+      return res.status(200).json({ message: 'Login successfully', type: 'user', user });
     } else {
       return res.status(400).json({ message: 'Username or password is incorrect!' });
     }
-
   } catch (error) {
     return res.status(500).json({ message: 'Error logging in', error });
   }
 };
+
 
 
 const registerClient = async (req, res) => {

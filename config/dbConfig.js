@@ -4,9 +4,9 @@ const pool = mysql.createPool({
     host: 'localhost',
     user: 'root',
     password: 'loc0918119316',
-    database: 'Project_1',
+    database: 'project_b',
     waitForConnections: true,
-    connectionLimit: 10,    // Adjust based on your app's needs
+    connectionLimit: 10,    
     queueLimit: 0
 });
 

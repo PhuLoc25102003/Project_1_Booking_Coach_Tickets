@@ -15,7 +15,6 @@ async function getAllAcounts() {
 async function createClient( username, password, name, email, phoneNumber) {
     const rank = 'normal';  // Default rank
     try {
-        // Use the `client_id` from the Account to insert into Client
         const [result] = await db.query('INSERT INTO clients (client_username, client_password, client_name, phone_number, email, `rank`) VALUES (?, ?, ?, ?, ?, ?)', 
         [ username, password, name, phoneNumber, email, rank]);
         return {username, password, name, email, phoneNumber, rank };

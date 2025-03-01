@@ -1,0 +1,97 @@
+/* Định dạng chung */
+body {
+    background-color: #f4f4f4;
+    font-family: Arial, sans-serif;
+}
+
+/* Container chính */
+.container {
+    max-width: 1200px;
+}
+
+/* Card chung */
+.card {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Tiêu đề trong card */
+.card h4 {
+    color: #2697BF;
+    font-weight: bold;
+}
+
+/* Cột phương thức thanh toán */
+.list-group-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 16px;
+    padding: 10px;
+    border: none;
+    background: #f9f9f9;
+    transition: background 0.3s;
+}
+
+.list-group-item:hover {
+    background: #e6f5fa;
+}
+
+/* Icon phương thức thanh toán */
+.payment-icon {
+    width: 24px;
+    height: 24px;
+}
+
+/* Tổng thanh toán */
+.text-danger {
+    color: #e63946 !important;
+}
+
+.fw-bold {
+    font-weight: bold;
+}
+
+.fs-4 {
+    font-size: 1.5rem;
+}
+
+/* QR Code */
+.qr-code {
+    width: 150px;
+    height: 150px;
+}
+
+/* Thời gian giữ chỗ */
+#timer {
+    font-weight: bold;
+    color: #e63946;
+}
+
+/* Thông tin hành khách & chuyến đi */
+.card p {
+    margin-bottom: 5px;
+}
+
+/* Nút xác nhận thanh toán */
+.btn-danger {
+    background-color: #2697BF;
+    border: none;
+    padding: 12px 20px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 8px;
+    transition: 0.3s;
+}
+
+.btn-danger:hover {
+    background-color: #0adcf3;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        width: 95%;
+    }
+}

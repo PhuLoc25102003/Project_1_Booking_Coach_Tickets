@@ -94,8 +94,7 @@ header{
     width: 15%;
 }
 
-.coach-license-suggestion{
-    list-style-type: none;
+.suggestion-style{
     cursor: pointer;
     margin-bottom: 2px;
     margin-top: 2px;
@@ -105,12 +104,26 @@ header{
     transition: border 0.3s;
 }
 
-.suggestion-list li:hover, 
-.suggestion-list li:focus {
+.suggestion-route-list li:hover,
+.suggestion-route-list li:focus,
+.suggestion-driver-list li:hover,
+.suggestion-driver-list li:focus,
+.suggestion-coach-list li:hover,
+.suggestion-coach-list li:focus,
+.suggestion-client-list li:hover,
+.suggestion-client-list li:focus {
     border: 3px solid #007bff; 
     background-color: #e9ecef; 
     outline: none; 
 }
+
+.suggestion-route-list,
+.suggestion-driver-list,
+.suggestion-coach-list,
+.suggestion-client-list {
+    list-style: none;
+}
+
 
 
 
@@ -135,4 +148,137 @@ header{
 }
 .btn-custom:hover {
     background-color: #0056b3;
+}
+
+.col-md-4{
+    margin-bottom: 20px;
+}
+
+.frame{
+    margin: 20px;
+}
+
+
+.page-navigator{
+    display: flex;
+    flex-direction: row;
+}
+
+.page-navigator p{
+    width: 5%;
+    height: 8%;
+    border: 1px solid black;
+    text-align: center;
+    padding: 5px;
+    font-size: small;
+}
+
+.button-navigator{
+    width: 8%;
+    height: 8%;
+    padding: 5px;
+    font-size: small;
+    font-weight: bold;
+    border-radius: 4px;
+}
+
+.coaches{
+    position: relative;
+}
+
+.success-notification{
+    position: absolute;
+    top: 100px;
+    right: 30px;
+}
+
+
+/* Container chính */
+.bus-layout {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Tiêu đề tầng */
+.bus-layout h3 {
+    text-align: center;
+    color: #333;
+    margin: 10px 0;
+}
+
+/* Container ghế */
+.seats-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 ghế mỗi hàng, có thể điều chỉnh */
+    gap: 10px;
+    padding: 10px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+/* Ghế chung */
+.seat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* Ghế trống */
+.seat.available {
+    background-color: #4CAF50; /* Màu xanh cho ghế trống */
+    color: white;
+}
+
+.seat.available:hover {
+    background-color: #45a049;
+}
+
+/* Ghế đã đặt */
+.seat.booked {
+    background-color: #f44336; /* Màu đỏ cho ghế đã đặt */
+    color: white;
+    cursor: not-allowed;
+}
+
+/* Checkbox ẩn đi, chỉ hiển thị label */
+.seat input[type="checkbox"] {
+    display: none;
+}
+
+.seat label {
+    margin: 0;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+/* Khi checkbox được chọn */
+.seat input[type="checkbox"]:checked + label {
+    background-color: #ff9800; /* Màu cam khi chọn */
+    padding: 5px;
+    border-radius: 3px;
+}
+
+.spinner-border {
+    width: 1rem;
+    height: 1rem;
+    border: 0.25em solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: spinner-border 0.75s linear infinite;
+    vertical-align: middle;
+    margin-left: 5px;
+}
+
+@keyframes spinner-border {
+    to { transform: rotate(360deg); }
 }

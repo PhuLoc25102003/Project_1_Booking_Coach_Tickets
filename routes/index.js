@@ -29,49 +29,52 @@ router.get('/admin', (req, res) => {
 
 router.get('/search-coaches', adminController.searchCoaches);
 
-
-router.post('/add-driver', adminController.addDriver);
+router.get('/search-drivers', adminController.searchDrivers);
 
 router.post('/register-client', userController.registerClient);
 
 router.post('/login', userController.login);
 
-router.get('/showDrivers', adminController.getAllDrivers);
-
+//Driver_function
+router.post('/add-driver', adminController.addDriver);
+router.get('/drivers', adminController.getDrivers);
 router.post('/deleteDriver', adminController.deleteDriver);
+router.post('/edit-driver', adminController.updateDriver);
 
-router.post('/update-driver', adminController.updateDriver);
 
-
+//Coach_function
 router.post('/add-coach', adminController.addCoach);
-
-router.get('/showCoaches', adminController.getAllCoaches);
-
-router.get('/get-coaches', adminController.getAllCoaches);
-
+router.get('/coaches', adminController.getCoaches);
 router.post('/deleteCoach', adminController.deleteCoach);
-
 router.post('/update-coach', adminController.updateCoach);
 
-
+//Route_function
 router.post('/add-route', adminController.addRoute);
-
-router.get('/showRoutes', adminController.getAllRoutes);
-
+router.get('/routes', adminController.getRoutes);
 router.post('/deleteRoute', adminController.deleteRoute);
-
 router.post('/update-route', adminController.updateRoute);
 
-
-router.get('/showClients', adminController.getAllClients);
+//Client_function
+router.get('/clients', adminController.getClients);
 router.post('/add-client', adminController.addClient);
 router.post('/deleteClient', adminController.deleteClient);
 router.post('/update-client', adminController.updateClient);
 
+//Booking_function
+router.post('/add-booking', adminController.addBooking);
+router.get('/search-clients', adminController.searchClients);
+router.get('/search-routes', adminController.searchRoutes);
+router.get('/get-booked-seats', adminController.getBookedList);
+router.get('/bookings', adminController.getBookings);
+router.post('/update-booking-status', adminController.updateBookingStatus);
 
 
 router.post('/register-admin', adminController.registerAdmin);
-
+router.get('/totalDrivers', adminController.getTotalDrivers);
+router.get('/totalCoaches', adminController.getTotalCoaches);
+router.get('/totalClients', adminController.getTotalClients);
+router.get('/totalRoutes', adminController.getTotalRoutes);
+router.get('/totalAdmins', adminController.getTotalAdmins);
 
 
 module.exports = router;
