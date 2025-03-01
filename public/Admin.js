@@ -1528,7 +1528,6 @@ $(document).ready(function () {
 
     registerAdmin();
     menuStatus();
-
     // Dashboard_function
     loadDashboardData();
 

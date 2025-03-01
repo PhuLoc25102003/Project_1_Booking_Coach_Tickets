@@ -4,6 +4,17 @@ function login() {
         const username = $('#login-username').val();
         const password = $('#login-password').val();
 
+        // Lấy nút và overlay
+        const $loginBtn = $('#loginBtn');
+        const $loadingOverlay = $('#loadingOverlay');
+
+        // Vô hiệu hóa nút và hiển thị overlay loading
+        $loginBtn.prop('disabled', true);
+        $loadingOverlay.show();
+
+        const startTime = Date.now(); // Thời gian bắt đầu yêu cầu
+        const minLoadingTime = 1000; // Độ trễ tối thiểu (1 giây)
+
         $.ajax({
             url: '/login',
             type: 'POST',
@@ -11,30 +22,88 @@ function login() {
             contentType: 'application/json',
             data: JSON.stringify({ username, password }),
             success: function (data) {
-                console.log(data);  
-                if (data.type === 'admin') {
-                    $('#welcomeContent').html(`<h1>Welcome, ${data.user.name}!</h1>`);  
-                    setTimeout(function() {
-                        window.location.href = '/admin';  
-                    }, 1000);  
-                } else if (data.type === 'user') {
-                    $('#welcomeContent').html(`<h1>Welcome, ${data.user.name}!</h1>`);  
-                    setTimeout(function() {
-                        window.location.href = '/';  
-                    }, 1000);  
-                } else {
-                    alert('Unknown account type');
-                }
+                console.log('Login response:', data);
+                const elapsedTime = Date.now() - startTime; // Thời gian đã trôi qua
+                const remainingTime = minLoadingTime - elapsedTime; // Thời gian còn lại để đạt tối thiểu
+
+                // Đảm bảo loading hiển thị ít nhất minLoadingTime
+                setTimeout(() => {
+                    if (data.type === 'admin') {
+                        $('#welcomeContent').html(`<h1>Welcome, ${data.user?.name || 'Admin'}!</h1>`);
+                        setTimeout(() => {
+                            window.location.href = '/admin';
+                        }, 1000);
+                    } else if (data.type === 'user') {
+                        $('#welcomeContent').html(`<h1>Welcome, ${data.user?.name || 'User'}!</h1>`);
+                        setTimeout(() => {
+                            window.location.href = '/';
+                        }, 1000);
+                    } else {
+                        alert('Unknown account type');
+                    }
+                    $loginBtn.prop('disabled', false);
+                    $loadingOverlay.hide();
+                }, remainingTime > 0 ? remainingTime : 0);
             },
-            error: function (error) {
-                alert('Username or password is incorrect!');
+            error: function (xhr) {
+                console.error('Login error:', xhr);
+                const elapsedTime = Date.now() - startTime;
+                const remainingTime = minLoadingTime - elapsedTime;
+
+                setTimeout(() => {
+                    alert('Username or password is incorrect!');
+                    $loginBtn.prop('disabled', false);
+                    $loadingOverlay.hide();
+                }, remainingTime > 0 ? remainingTime : 0);
             }
         });
     });
 }
 
+function checkSession() {
+    $.ajax({
+        url: '/check-session',
+        type: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            console.log('Session check:', data);
+            const currentPath = window.location.pathname;
+            if (data.loggedIn) {
+                if (data.type === 'admin' && currentPath != '/admin') {
+                    window.location.href = '/admin';
+                } else if (data.type === 'user' && currentPath !== '/') {
+                    window.location.href = '/';
+                }
+            } else if (currentPath !== '/Login') {
+                window.location.href = '/Login';
+            }
+        },
+        error: function (xhr) {
+            console.error('Session check error:', xhr);
+            if (window.location.pathname !== '/Login') {
+                window.location.href = '/Login'; // Chuyển về login nếu lỗi
+            }
+        }
+    });
+}
 
-function register(){
+function logout() {
+    $.ajax({
+        url: '/logout',
+        type: 'POST',
+        dataType: 'json',
+        success: function (data) {
+            alert(data.message);
+            window.location.href = '/login';
+        },
+        error: function (xhr) {
+            console.error('Logout error:', xhr);
+            alert('Error logging out');
+        }
+    });
+}
+
+function register() {
     $("#registerForm").on("submit", function (event) {
         event.preventDefault();
 
@@ -62,7 +131,6 @@ function register(){
         } else if (phoneNumber.length === 0) {
             alert("Please enter your phone number!")
         } else {
-            // Tất cả điều kiện đều hợp lệ, thực hiện AJAX
             $.ajax({
                 url: '/register-client',
                 type: 'POST',
@@ -78,6 +146,25 @@ function register(){
         }
 
     });
+}
+
+function updateAdminName() {
+    if (window.location.pathname === '/admin') {
+        $.ajax({
+            url: '/check-session',
+            type: 'GET',
+            dataType: 'json',
+            success: function (data) {
+                console.log('Session check:', data);
+                if (data.loggedIn && data.type === 'admin') {
+                    $('.adminName').text(data.name);
+                }
+            },
+            error: function (xhr) {
+                console.error('Session check error:', xhr);
+            }
+        });
+    }
 }
 
 $(document).ready(function () {
@@ -133,8 +220,17 @@ $(document).ready(function () {
     });
 
     register();
+    checkSession();
+    updateAdminName();
     login();
-
+    $('#logoutBtn').on('click', function (e) {
+        e.preventDefault();
+        logout();
+    });
+    $('#login').on('click', function (e) {
+        e.preventDefault();
+        logout();
+    });
 
 
 });

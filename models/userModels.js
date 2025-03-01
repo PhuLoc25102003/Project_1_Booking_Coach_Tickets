@@ -35,7 +35,6 @@ const findAdminByUsername = async (username) => {
 };
 
 
-
 module.exports = {
     getAllAcounts,
     findUserByUsername,

@@ -21,7 +21,6 @@ const driver = {
     },
     deleteDriver: async (req, res) => {
         const driverId = req.body.id;
-
         try {
             const result = await adminModel.driver.deleteDriverById(driverId);
             if (result.affectedRows === 0) {
@@ -34,7 +33,6 @@ const driver = {
     },
     getDrivers: async (req, res) => {
         try {
-
             const limit = Number.isInteger(parseInt(req.query.length)) ? parseInt(req.query.length) : 10;
             const offset = Number.isInteger(parseInt(req.query.start)) ? parseInt(req.query.start) : 0;
             const searchValue = req.query.search?.value || '';

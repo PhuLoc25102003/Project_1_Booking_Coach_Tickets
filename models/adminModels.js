@@ -262,8 +262,6 @@ const route = {
 
 };
 
-
-
 // Client_function
 const client = {
     getClients: async (limit, offset, searchValue, orderColumn, orderDir) => {
