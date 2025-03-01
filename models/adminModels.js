@@ -1,11 +1,6 @@
 const db = require("../config/dbConfig");
 
-
-
 // Driver_function
-
-
-
 const driver = {
     getDrivers: async (limit, offset, searchValue, orderColumn, orderDir) => {
         try {
@@ -87,9 +82,6 @@ const driver = {
 
 
 // Coach_function
-
-
-
 const coach = {
     getCoaches: async (limit, offset, searchValue, orderColumn, orderDir) => {
         try {
@@ -107,7 +99,6 @@ const coach = {
                 JOIN drivers ON coaches.driver_id = drivers.driver_id
             `;
 
-            // Kiểm tra nếu có searchValue
             if (searchValue && searchValue.trim() !== '') {
                 query += ` WHERE coaches.coach_type LIKE ? 
                         OR coaches.license_plate LIKE ? 
@@ -118,7 +109,6 @@ const coach = {
                             OR coaches.coach_operator LIKE ? 
                             OR drivers.driver_name LIKE ?`;
 
-                // Đẩy giá trị tìm kiếm vào queryParams
                 queryParams.push(`%${searchValue}%`, `%${searchValue}%`, `%${searchValue}%`, `%${searchValue}%`);
             }
 
@@ -127,11 +117,9 @@ const coach = {
                 orderColumn = 'coach_id';
             }
 
-            // Thêm ORDER BY và LIMIT vào câu truy vấn
             query += ` ORDER BY ${orderColumn} ${orderDir}`;
             query += ` LIMIT ${limit} OFFSET ${offset}`;
 
-            // Thực thi câu truy vấn và đếm
             const [countResult] = await db.execute(countQuery, queryParams);
             const [data] = await db.execute(query, queryParams);
 
@@ -347,8 +335,6 @@ const client = {
 };
 
 
-
-
 // admin 
 async function createAdmin(username, password, name) {
     try {
@@ -378,8 +364,8 @@ const booking = {
         SELECT COUNT(*) as total
         FROM booking b
         JOIN clients c ON b.client_id = c.client_id
+        where b.order_status = 'in process'
     `;
-
             if (searchValue) {
                 query += `
                 WHERE b.booking_id LIKE ? 
@@ -551,7 +537,7 @@ const booking = {
                 WHERE order_status = 'in process'
                 AND booking_date <= ?
             `;
-            const [results] = await db.query(query, [timeThreshold]); // Truyền chuỗi định dạng MySQL
+            const [results] = await db.query(query, [timeThreshold]);
             console.log('Expired bookings with booking_date:', results);
             return results;
         } catch (err) {

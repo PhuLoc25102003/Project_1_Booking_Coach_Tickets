@@ -1461,8 +1461,6 @@ function registerAdmin() {
 }
 
 
-
-
 // Dashboard
 function loadDashboardData() {
     $.ajax({
@@ -1584,9 +1582,7 @@ $(document).ready(function () {
     addCoach();
     editCoach();
 
-
-
-    //route
+    //Route_function
     $(document).on('click', '#route-link', function () {
         hideContent();
         $('#routeContent').show();
@@ -1596,8 +1592,6 @@ $(document).ready(function () {
     addRoute();
     editRoute();
     searchLicense();
-
-
     $(document).on('click', '#deleteRouteBtn', function () {
         const routeId = $(this).data('route-id');
         $('#confirmDeleteRouteModal').modal('show');
@@ -1628,8 +1622,7 @@ $(document).ready(function () {
         });
     });
 
-
-    //booking
+    //Booking_function
     $(document).on('click', '#booking-link', function () {
         hideContent();
         $('#bookingContent').show();
@@ -1639,9 +1632,7 @@ $(document).ready(function () {
     searchClients();
     searchRoutes();
 
-
-
-    // admin
+    // Admin
     $(document).on('click', '#admin-link', function () {
         hideContent();
         $('#adminContent').show();
