@@ -347,7 +347,6 @@ async function createAdmin(username, password, name) {
 
 
 // Booking_function
-
 const booking = {
     getBookings: async (limit, offset, searchValue, orderColumn, orderDir) => {
         try {
@@ -405,6 +404,7 @@ const booking = {
             const query = `
                 SELECT 
                     b.booking_id,
+                    c.client_id,
                     c.client_name,
                     c.email,
                     r.departure_point,
@@ -420,13 +420,13 @@ const booking = {
             `;
             console.log('Executing query for booking_id:', bookingId);
             const [results] = await db.query(query, [bookingId]);
-    
+
             console.log('Query results:', results);
-    
+
             if (results.length === 0) {
                 throw new Error(`Booking with ID ${bookingId} not found or missing related data in clients/routes`);
             }
-    
+
             return results[0];
         } catch (err) {
             console.error('Error fetching booking details:', err.message, err.stack);
@@ -540,6 +540,23 @@ const booking = {
             return results;
         } catch (err) {
             console.error('Error fetching expired bookings:', err.message, err.stack);
+            throw err;
+        }
+    },
+    updateClientExpense: async (clientId, price) => {
+        try {
+            const query = 'update clients set expense = coalesce(expense, 0) + ? Where client_id = ?';
+            const value = [price, clientId];
+            const [result] = await db.query(query, value);
+            console.log('Update expense result:', result);
+
+            if (result.affectedRows === 0) {
+                throw new Error(`Client with ID ${clientId} not found`);
+            }
+            return result;
+        }
+        catch (err) {
+            console.error('Error updating expense:', err);
             throw err;
         }
     }

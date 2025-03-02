@@ -491,7 +491,9 @@ const booking = {
                         <li><strong>Giá tiền:</strong> ${price} VND</li>
                         <li><strong>Trạng thái:</strong> ${orderStatus}</li>
                     </ul>
-                    <p>Vui lòng kiểm tra thông tin và thanh toán trong vòng 30 phút để tránh bị hủy tự động.</p>
+                    <p><strong>Số tài khoản:</strong> 0982356572 MB bank</p>
+                    <p><strong>chủ tài khoản:</strong> Đặng Phú Lộc</p>
+                    <p>Vui lòng kiểm tra thông tin và thanh toán vào trong vòng 30 phút để tránh bị hủy tự động.</p>
                     <p>Trân trọng,<br>Đội ngũ Booking Coach Tickets</p>
                 `
             };
@@ -558,6 +560,16 @@ const booking = {
 
         try {
             await adminModel.booking.updateBookingStatus(bookingId, orderStatus);
+            if(orderStatus === 'paid'){
+                const booking = await adminModel.booking.getBookingDetails(bookingId);
+                const clientId = booking.client_id;
+                const price = booking.price;
+
+                if(!clientId || isNaN(price)){
+                    throw new Error('Invalid client_id or price in booking');
+                }
+                await adminModel.booking.updateClientExpense(clientId, price);
+            }
             res.status(200).json({ message: `Booking status updated to ${orderStatus}` });
         } catch (err) {
             console.error('Error in updateBookingStatus:', err);

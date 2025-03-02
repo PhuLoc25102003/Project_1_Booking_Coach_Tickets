@@ -1031,6 +1031,7 @@ function showBookingTable() {
     $('#booking-table').on('click', '.confirm-btn', function () {
         const bookingId = $(this).data('booking-id');
         confirmBooking(bookingId);
+        
     });
 
     $('#booking-table').on('click', '.cancel-btn', function () {
