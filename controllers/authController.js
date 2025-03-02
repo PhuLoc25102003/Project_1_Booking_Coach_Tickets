@@ -7,7 +7,7 @@ const sessionConfig = {
     resave: false,
     saveUninitialized: false,
     cookie: {
-        maxAge: 24 * 60 * 60 * 1000,
+        maxAge: 24 * 60 * 60 * 5000,
         secure: false
     }
 };
@@ -48,6 +48,8 @@ const login = async (req, res) => {
                 id: user.client_id,
                 username: user.client_username,
                 name: user.client_name,
+                email: user.email,
+                phone: user.phone_number,
                 type: 'user'
             };
             return res.status(200).json({ message: 'Login successfully', type: 'user' });

@@ -82,17 +82,49 @@ function checkSession() {
 
 function logout() {
     $.ajax({
-        url: '/logout',
-        type: 'POST',
+        url: '/check-session',
+        type: 'GET',
         dataType: 'json',
-        success: function (data) {
-            alert(data.message);
-            window.location.href = '/login';
-            updateUserDropdown();
+        success: function (sessionData) {
+            console.log('Session before logout:', sessionData);
+            if (sessionData.loggedIn) {
+                const userType = sessionData.type; 
+                $.ajax({
+                    url: '/logout',
+                    type: 'POST',
+                    dataType: 'json',
+                    success: function (data) {
+                        console.log('Logout response:', data);
+                        alert(data.message);
+
+                        if (userType === 'admin') {
+                            window.location.href = '/Login';
+                        } else if (userType === 'user') {
+                            window.location.href = '/';
+                        } else {
+                            window.location.href = '/Login'; 
+                        }
+                    },
+                    error: function (xhr) {
+                        console.error('Logout error:', xhr);
+                        alert('Error logging out');
+                    
+                        if (userType === 'admin') {
+                            window.location.href = '/Login';
+                        } else if (userType === 'user') {
+                            window.location.href = '/';
+                        } else {
+                            window.location.href = '/Login';
+                        }
+                    }
+                });
+            } else {
+                window.location.href = '/Login';
+            }
         },
         error: function (xhr) {
-            console.error('Logout error:', xhr);
-            alert('Error logging out');
+            console.error('Session check error before logout:', xhr.status, xhr.statusText);
+            window.location.href = '/Login';
         }
     });
 }
@@ -104,12 +136,11 @@ function register() {
         const $registerBtn = $('#registerBtn');
         const $loadingOverlay = $('#loadingOverlay');
 
-        // Vô hiệu hóa nút và hiển thị overlay loading
         $registerBtn.prop('disabled', true);
         $loadingOverlay.show();
 
         const startTime = Date.now();
-        const minLoadingTime = 1000; // Delay tối thiểu 1 giây
+        const minLoadingTime = 1000; 
 
         const username = $('#register-username').val();
         const password = $('#register-password').val();
@@ -118,7 +149,6 @@ function register() {
         const email = $('#register-email').val();
         const phoneNumber = $('#register-phone').val();
 
-        // Kiểm tra điều kiện đầu vào
         if (username.length === 0) {
             setTimeout(() => {
                 alert("Please enter your username!");
@@ -213,11 +243,11 @@ function updateUserDropdown() {
             const $afterLogin = $('.after-login');
             const $profileLink = $('#profileLink');
             const $logoutLink = $('#logoutLink');
-            const $userName = $('#userName');
-
+            const $userName = $('.userName');
             if (data.loggedIn) {
                 $beforeLogin.hide();
                 $afterLogin.show();
+                $afterLogin.addClass('visible').show();
                 $userName.text(data.user.name);
                 $profileLink.show();
                 $logoutLink.show();
@@ -257,58 +287,7 @@ function updateAdminName() {
     }
 }
 
-
 $(document).ready(function () {
-    // Toggle to show register form
-    $('#show-register').click(function () {
-        $('#login-form').hide();
-        $('#register-form').show();
-    });
-
-    // Toggle to show login form
-    $('#show-login').click(function () {
-        $('#register-form').hide();
-        $('#login-form').show();
-    });
-
-    // Show/Hide Password for login
-    $('#login-toggle-password').click(function () {
-        const passwordInput = $('#login-password');
-        const passwordIcon = $(this);
-        if (passwordInput.attr('type') === 'password') {
-            passwordInput.attr('type', 'text');
-            passwordIcon.removeClass('fa-eye').addClass('fa-eye-slash');
-        } else {
-            passwordInput.attr('type', 'password');
-            passwordIcon.removeClass('fa-eye-slash').addClass('fa-eye');
-        }
-    });
-
-    // Show/Hide Password for register password
-    $('#register-toggle-password').click(function () {
-        const passwordInput = $('#register-password');
-        const passwordIcon = $(this);
-        if (passwordInput.attr('type') === 'password') {
-            passwordInput.attr('type', 'text');
-            passwordIcon.removeClass('fa-eye').addClass('fa-eye-slash');
-        } else {
-            passwordInput.attr('type', 'password');
-            passwordIcon.removeClass('fa-eye-slash').addClass('fa-eye');
-        }
-    });
-
-    // Show/Hide Password for register confirm password
-    $('#register-toggle-confirm-password').click(function () {
-        const passwordInput = $('#register-confirm-password');
-        const passwordIcon = $(this);
-        if (passwordInput.attr('type') === 'password') {
-            passwordInput.attr('type', 'text');
-            passwordIcon.removeClass('fa-eye').addClass('fa-eye-slash');
-        } else {
-            passwordInput.attr('type', 'password');
-            passwordIcon.removeClass('fa-eye-slash').addClass('fa-eye');
-        }
-    });
 
     register();
     checkSession();
@@ -331,5 +310,10 @@ $(document).ready(function () {
     });
 
     updateUserDropdown();
+  
+    $('#profileLink').on('click', function (e) {
+        e.preventDefault();
+        window.location.href = '/user-profile';
+    });
 
 });

@@ -153,7 +153,7 @@ a{color:inherit;text-decoration:none}
 	margin-top: 120px;
 }
 .loading-overlay {
-    position: absolute; /* Hoặc fixed nếu bạn muốn phủ toàn màn hình */
+    position: absolute; 
     top: 0;
     left: 0;
     width: 100%;
@@ -167,19 +167,19 @@ a{color:inherit;text-decoration:none}
 
 .loading-content {
     display: flex;
-    flex-direction: column; /* Xếp spinner và chữ theo cột */
-    align-items: center; /* Căn giữa ngang */
+    flex-direction: column; 
+    align-items: center; 
     text-align: center;
 }
 
 .spinner-border {
     width: 3rem;
     height: 3rem;
-    margin-bottom: 10px; /* Khoảng cách giữa spinner và chữ */
+    margin-bottom: 10px; 
 }
 
 .loading-text {
-    color: #fff; /* Màu chữ trắng để nổi trên nền tối */
-    font-size: 1.2rem; /* Kích thước chữ */
-    font-family: 'Open Sans', sans-serif; /* Giữ đồng nhất với font của trang */
+    color: #fff; 
+    font-size: 1.2rem; 
+    font-family: 'Open Sans', sans-serif; 
 }

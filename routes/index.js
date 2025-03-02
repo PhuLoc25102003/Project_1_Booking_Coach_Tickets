@@ -22,6 +22,12 @@ router.get('/admin', requireAdmin, (req, res) => {
     res.sendFile(path.join(__dirname, '../views', 'Admin.html'));
 });
 
+
+router.get('/user-profile', (req, res) => {
+    res.sendFile(path.join(__dirname, '../views', 'User.html'));
+});
+
+
 router.get('/Login', (req, res) => {
     if (req.session.user) {
         if (req.session.user.type === 'admin') {
@@ -81,5 +87,12 @@ router.get('/totalClients', requireAdmin, adminController.dashboard.getTotalClie
 router.get('/totalRoutes', requireAdmin, adminController.dashboard.getTotalRoutes);
 router.get('/totalAdmins', requireAdmin, adminController.dashboard.getTotalAdmins);
 router.get('/totalRevenue', requireAdmin, adminController.dashboard.getTotalRevenue);
+
+
+// User
+router.post('/update-user-profile', userController.updateUserProfile);
+router.get('/get-user-bookings', userController.getUserBookings);
+router.post('/change-password', userController.changePassword);
+
 
 module.exports = router;

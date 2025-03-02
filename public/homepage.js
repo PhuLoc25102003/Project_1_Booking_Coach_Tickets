@@ -13,37 +13,136 @@ const tripsData = {
     ]
 };
 
+// News data array
+const newsData = [
+    {
+        id: 1,
+        image: "/assets/news2.jpg",
+        title: "Our Elite Team of Drivers",
+        description: "Our team of seasoned drivers is meticulously vetted and trained to ensure your safety and comfort. Their deep knowledge of routes and commitment to excellence guarantee a seamless travel experience.",
+        link: "#"
+    },
+    {
+        id: 2,
+        image: "/assets/news1.jpg",
+        title: "Modern and Comfortable Coaches",
+        description: "Experience unparalleled comfort and sophistication with our state-of-the-art coaches. Our fleet is equipped with the latest technology and luxurious amenities, ensuring every journey is a pleasure.",
+        link: "#"
+    },
+    {
+        id: 3,
+        image: "/assets/news3.jpg",
+        title: "Extensive Network of Convenient Pick-Up Points",
+        description: "Enjoy easy access with our strategically located pick-up points. Whether from busy cities or rural towns, our comprehensive routes ensure a stress-free journey.",
+        link: "#"
+    }
+];
+
+// News component function
+function renderNews() {
+    const newsContainer = document.getElementById("news-container");
+    
+    if (!newsContainer) {
+        console.error("News container not found");
+        return;
+    }
+    
+    // Clear existing content
+    newsContainer.innerHTML = "";
+    
+    // Create and append news cards
+    newsData.forEach(news => {
+        const newsCard = createNewsCard(news);
+        newsContainer.appendChild(newsCard);
+    });
+    
+    // Add animation to news cards
+    animateNewsCards();
+}
+
+// Helper function to create a news card
+function createNewsCard(newsItem) {
+    const colDiv = document.createElement("div");
+    colDiv.className = "col-md-12 col-lg-4";
+    
+    colDiv.innerHTML = `
+        <div class="news-card mb-4">
+            <div class="card shadow h-100">
+                <div class="news-img-container">
+                    <img src="${newsItem.image}" alt="${newsItem.title}" class="card-img-top">
+                </div>
+                <div class="card-body d-flex flex-column">
+                    <h3 class="card-title">${newsItem.title}</h3>
+                    <p class="card-text flex-grow-1">${newsItem.description}</p>
+                    <a href="${newsItem.link}" class="btn btn-primary mt-auto">Read More <i class="fas fa-arrow-right ml-2"></i></a>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    return colDiv;
+}
+
+// Animation function for news cards
+function animateNewsCards() {
+    const cards = document.querySelectorAll(".news-card");
+    cards.forEach((card, index) => {
+        // Add delay to each card for staggered animation
+        setTimeout(() => {
+            card.classList.add("animate__animated", "animate__fadeInUp");
+        }, 100 * index);
+    });
+}
+
 // Xử lý tìm kiếm chuyến đi
 function searchTrip(event) {
     event.preventDefault();
-    
+
     // Lấy thông tin từ form tìm kiếm
     const startPoint = document.getElementById("from").value;
     const destination = document.getElementById("to").value;
     const tripResultsDiv = document.getElementById("trip-results");
-    tripResultsDiv.innerHTML = ""; // Xóa kết quả cũ
     
+    if (!tripResultsDiv) {
+        console.error("Trip results container not found");
+        return;
+    }
+    
+    tripResultsDiv.innerHTML = ""; // Xóa kết quả cũ
+
     // Tạo key để tìm dữ liệu chuyến đi trong tripsData
     const tripKey = `${startPoint}-${destination}`;
     const trips = tripsData[tripKey];
 
+    // Hiển thị loader
+    tripResultsDiv.innerHTML = '<div class="text-center py-3"><i class="fas fa-spinner fa-spin fa-2x"></i></div>';
+    
+    // Simulate loading time
+    setTimeout(() => {
+        displayTripResults(trips, tripResultsDiv);
+    }, 600);
+}
+
+// Function to display trip results
+function displayTripResults(trips, container) {
+    container.innerHTML = "";
+    
     // Nếu có chuyến đi phù hợp, hiển thị danh sách kết quả
-    if (trips) {
+    if (trips && trips.length > 0) {
         trips.forEach((trip, index) => {
             const tripDiv = document.createElement("div");
-            tripDiv.classList.add("trip-card", "shadow-lg", "p-3", "mb-3", "bg-white", "rounded");
+            tripDiv.classList.add("trip-card", "shadow-lg", "p-3", "mb-3", "bg-white", "rounded", "animate__animated", "animate__fadeIn");
 
-            // Tạo giao diện hiển thị thông tin chuyến đi
             tripDiv.innerHTML = `
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
                         <h5 class="fw-bold">${trip.busCompany}</h5>
                         <p class="mb-1">
-                            <span class="text-muted"><i class="bi bi-clock"></i> ${trip.departureTime} ➝ ${trip.arrivalTime} (${trip.duration})</span>
+                            <span class="text-muted"><i class="fas fa-clock"></i> ${trip.departureTime} ➝ ${trip.arrivalTime} (${trip.duration})</span>
                         </p>
                         <p class="mb-1">
                             <span class="badge bg-primary">${trip.vehicleType}</span> • 
-                            <span class="text-muted"><i class="bi bi-person-fill"></i> ${trip.availableSeats} seats available</span>
+                            <span class="text-muted"><i class="fas fa-user"></i> ${trip.availableSeats} seats available</span>
                         </p>
                     </div>
                     <div class="text-end">
@@ -52,247 +151,275 @@ function searchTrip(event) {
                     </div>
                 </div>
             `;
-            tripResultsDiv.appendChild(tripDiv);
+            
+            // Set animation delay for staggered appearance
+            tripDiv.style.animationDelay = `${index * 0.1}s`;
+            
+            tripDiv.querySelector(".select-trip").addEventListener("click", function () {
+                showSelectionForm(trip);
+            });
+            
+            container.appendChild(tripDiv);
         });
     } else {
-        // Hiển thị thông báo nếu không tìm thấy chuyến đi
-        tripResultsDiv.innerHTML = `<div class="alert alert-warning text-center">No trips found.</div>`;
+        container.innerHTML = `
+            <div class="alert alert-warning text-center animate__animated animate__fadeIn">
+                <i class="fas fa-exclamation-triangle mr-2"></i> No trips found for this route. Please try another destination.
+            </div>`;
     }
 }
 
-// Xử lý khi trang được tải xong
-document.addEventListener("DOMContentLoaded", function () {
-    createModals(); // Tạo các modal cho giao diện
-
-    // Lắng nghe sự kiện chọn chuyến đi
-    document.getElementById("trip-results").addEventListener("click", function (event) {
-        if (event.target.classList.contains("select-trip")) {
-            const seatModal = new bootstrap.Modal(document.getElementById("seatSelectionModal"));
-            seatModal.show(); // Hiển thị modal chọn ghế
-        }
+// Hiển thị form chọn ghế, điểm đón và xác nhận đặt vé
+function showSelectionForm(trip) {
+    const selectionDiv = document.getElementById("trip-selection");
+    
+    if (!selectionDiv) {
+        console.error("Trip selection container not found");
+        return;
+    }
+    
+    selectionDiv.innerHTML = `
+        <div class="card shadow p-4 mt-4 animate__animated animate__fadeIn">
+            <h4 class="fw-bold">Confirm Your Trip</h4>
+            <div class="row">
+                <!-- Left Column: Buyer Info -->
+                <div class="col-md-6">
+                    <h5><i class="fas fa-user-circle mr-2"></i>Buyer Information</h5>
+                    <div class="form-group mb-3">
+                        <label for="fullName">Full Name:</label>
+                        <input type="text" id="fullName" class="form-control" value="Nguyen Van A" readonly>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label for="phone">Phone Number:</label>
+                        <input type="text" id="phone" class="form-control" value="0123456789" readonly>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <label for="email">Email:</label>
+                        <input type="text" id="email" class="form-control" value="nguyenvana@example.com" readonly>
+                    </div>
+                </div>
+                
+                <!-- Right Column: Trip Info & Seat Selection -->
+                <div class="col-md-6">
+                    <h5><i class="fas fa-info-circle mr-2"></i>Trip Information</h5>
+                    <div class="trip-info-card p-3 mb-3 border rounded">
+                        <p><strong><i class="fas fa-bus mr-2"></i>Company:</strong> ${trip.busCompany}</p>
+                        <p><strong><i class="fas fa-clock mr-2"></i>Time:</strong> ${trip.departureTime} ➝ ${trip.arrivalTime} (${trip.duration})</p>
+                        <p><strong><i class="fas fa-tag mr-2"></i>Type:</strong> ${trip.vehicleType}</p>
+                        <p><strong><i class="fas fa-dollar-sign mr-2"></i>Price:</strong> ${trip.price}</p>
+                    </div>
+                </div>
+                
+                <div class="col-12 mt-3">
+                    <h5><i class="fas fa-couch mr-2"></i>Choose a Seat:</h5>
+                    <div class="seat-container p-3 border rounded">
+                        <h6 class="seat-deck-title">Lower Deck</h6>
+                        <div class="seat-row">
+                            <span class="seat sold">A01</span>
+                            <span class="seat available">A03</span>
+                            <span class="seat sold">A05</span>
+                            <span class="seat available">A07</span>
+                            <span class="seat available">A09</span>
+                        </div>
+                        <div class="seat-row">
+                            <span class="seat available">A12</span>
+                            <span class="seat available">A14</span>
+                            <span class="seat available">A16</span>
+                        </div>
+                        <h6 class="seat-deck-title mt-3">Upper Deck</h6>
+                        <div class="seat-row">
+                            <span class="seat available">B01</span>
+                            <span class="seat sold">B02</span>
+                            <span class="seat available">B03</span>
+                            <span class="seat available">B05</span>
+                            <span class="seat available">B07</span>
+                        </div>
+                        <div class="seat-row">
+                            <span class="seat available">B09</span>
+                            <span class="seat available">B11</span>
+                            <span class="seat available">B13</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Seat Legend -->
+                <div class="col-12 seat-legend mt-3">
+                    <div><span class="seat-indicator sold"></span> Sold</div>
+                    <div><span class="seat-indicator available"></span> Available</div>
+                    <div><span class="seat-indicator selected"></span> Selected</div>
+                </div>
+                
+                <div class="col-md-6 mt-3">
+                    <div class="form-group">
+                        <label for="pickup"><i class="fas fa-map-marker-alt mr-2"></i>Pickup Point:</label>
+                        <select id="pickup" class="form-control">
+                            <option>Station 1</option>
+                            <option>Station 2</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mt-3">
+                    <div class="form-group">
+                        <label for="dropoff"><i class="fas fa-map-pin mr-2"></i>Drop-off Point:</label>
+                        <select id="dropoff" class="form-control">
+                            <option>Stop 1</option>
+                            <option>Stop 2</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="col-12 mt-4">
+                    <button class="btn btn-success btn-lg w-100" onclick="proceedToPayment()">
+                        <i class="fas fa-credit-card mr-2"></i>Proceed to Payment
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Add seat selection functionality
+    document.querySelectorAll('.seat.available').forEach(seat => {
+        seat.addEventListener('click', function() {
+            // Remove selected class from all seats first
+            document.querySelectorAll('.seat.selected').forEach(selectedSeat => {
+                selectedSeat.classList.remove('selected');
+            });
+            
+            // Add selected class to this seat
+            if (!this.classList.contains('sold')) {
+                this.classList.add('selected');
+            }
+        });
     });
-
-    // Lắng nghe sự kiện chọn ghế
-    document.addEventListener("click", function (event) {
-        if (event.target.classList.contains("seat") && !event.target.classList.contains("sold") && !event.target.classList.contains("legend")) {
-            event.target.classList.toggle("selected"); // Chọn/bỏ chọn ghế
-        }
-    });
-
-    // Khi xác nhận ghế, mở modal chọn điểm đón/trả khách
-    document.getElementById("confirmSeat").addEventListener("click", function () {
-        const pickupModal = new bootstrap.Modal(document.getElementById("pickupDropoffModal"));
-        pickupModal.show();
-    });
-
-    // Gắn sự kiện tìm kiếm chuyến đi vào form
-    document.getElementById("trip-form").addEventListener("submit", searchTrip);
-});
-
-// Chuyển đến bước xác nhận thông tin trước khi thanh toán
-function goToPayment() {
-    console.log("goToPayment function triggered");
-
-    // Giả lập dữ liệu người dùng từ database
-    const userData = {
-        fullName: "Nguyen Van A",
-        phone: "0123456789",
-        email: "nguyenvana@example.com"
-    };
-
-    // Lấy thông tin từ lựa chọn của người dùng
-    const selectedSeat = document.querySelector(".seat.selected")?.textContent || "None";
-    const pickupPoint = document.getElementById("pickup")?.value || "N/A";
-    const dropoffPoint = document.getElementById("dropoff")?.value || "N/A";
-    const selectedTrip = document.querySelector(".trip-card.selected .fw-bold")?.textContent || "Unknown Trip";
-
-    // Đổ dữ liệu vào modal xác nhận
-    document.getElementById("confirmFullName").value = userData.fullName;
-    document.getElementById("confirmPhone").value = userData.phone;
-    document.getElementById("confirmEmail").value = userData.email;
-    document.getElementById("confirmTrip").value = selectedTrip;
-    document.getElementById("confirmSeat").value = selectedSeat;
-    document.getElementById("confirmPickup").value = pickupPoint;
-    document.getElementById("confirmDropoff").value = dropoffPoint;
-
-    // Hiển thị modal xác nhận
-    const confirmModal = new bootstrap.Modal(document.getElementById("confirmInfoModal"));
-    confirmModal.show();
+    
+    // Scroll to selection form
+    selectionDiv.scrollIntoView({ behavior: 'smooth' });
 }
 
 // Chuyển đến trang thanh toán
 function proceedToPayment() {
-    console.log("Proceeding to payment...");
+    // Lấy thông tin từ form
+    const fullNameInput = document.getElementById("fullName");
+    const phoneInput = document.getElementById("phone");
+    const emailInput = document.getElementById("email");
+    const pickupSelect = document.getElementById("pickup");
+    const dropoffSelect = document.getElementById("dropoff");
 
-    // Lấy thông tin cần thiết từ modal xác nhận
-    const fullName = document.getElementById("confirmFullName").value;
-    const phone = document.getElementById("confirmPhone").value;
-    const email = document.getElementById("confirmEmail").value;
-    const trip = document.getElementById("confirmTrip").value;
-    const seat = document.getElementById("confirmSeat").value;
-    const pickup = document.getElementById("confirmPickup").value;
-    const dropoff = document.getElementById("confirmDropoff").value;
+    // Kiểm tra xem các phần tử có tồn tại không
+    if (!fullNameInput || !phoneInput || !emailInput || !pickupSelect || !dropoffSelect) {
+        console.error("One or more input elements are missing.");
+        return;
+    }
 
-    // Chuyển hướng sang trang thanh toán với các thông tin cần thiết
-    const paymentURL = window.location.origin + "/payment" +
-        `?fullName=${encodeURIComponent(fullName)}` +
-        `&phone=${encodeURIComponent(phone)}` +
-        `&email=${encodeURIComponent(email)}` +
-        `&trip=${encodeURIComponent(trip)}` +
-        `&seat=${encodeURIComponent(seat)}` +
-        `&pickup=${encodeURIComponent(pickup)}` +
-        `&dropoff=${encodeURIComponent(dropoff)}`;
+    const fullName = fullNameInput.value;
+    const phone = phoneInput.value;
+    const email = emailInput.value;
+    const pickup = pickupSelect.value;
+    const dropoff = dropoffSelect.value;
 
-    window.location.href = paymentURL;
+    // Kiểm tra nếu người dùng chưa chọn ghế
+    const selectedSeat = document.querySelector(".seat.selected");
+    if (!selectedSeat) {
+        showAlert("Please select a seat before proceeding to payment.", "warning");
+        return;
+    }
+    const seatNumber = selectedSeat.innerText; 
+
+    // Chuyển hướng đến trang thanh toán với dữ liệu cần thiết
+    window.location.href = `/payment?name=${encodeURIComponent(fullName)}&phone=${encodeURIComponent(phone)}&email=${encodeURIComponent(email)}&pickup=${encodeURIComponent(pickup)}&dropoff=${encodeURIComponent(dropoff)}&seat=${encodeURIComponent(seatNumber)}`;
 }
 
-// Tạo các modal popup (chọn ghế, chọn điểm đón, xác nhận thông tin)
-function createModals() {
-    const appDiv = document.getElementById("app");
-
-    //Modal chọn ghế
-    const seatSelectionModal = document.createElement("div");
-    seatSelectionModal.id = "seatSelectionModal";
-    seatSelectionModal.className = "modal fade";
-    seatSelectionModal.setAttribute("tabindex", "-1");
-    seatSelectionModal.innerHTML = `
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Select Your Seat</h5>
-                    <button type="button" class="close" data-dismiss="modal">
-                        <span>&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <div class="seat-container">
-                        <h6>Lower Deck</h6>
-                        <div class="seat-row">
-                            <span class="seat sold">A01</span>
-                            <span class="seat">A03</span>
-                            <span class="seat sold">A05</span>
-                            <span class="seat">A07</span>
-                            <span class="seat">A09</span>
-                        </div>
-                        <div class="seat-row">
-                            <span class="seat">A12</span>
-                            <span class="seat">A14</span>
-                            <span class="seat">A16</span>
-                        </div>
-                        <h6>Upper Deck</h6>
-                        <div class="seat-row">
-                            <span class="seat">B01</span>
-                            <span class="seat sold">B02</span>
-                            <span class="seat">B03</span>
-                            <span class="seat">B05</span>
-                            <span class="seat">B07</span>
-                        </div>
-                        <div class="seat-row">
-                            <span class="seat">B09</span>
-                            <span class="seat">B11</span>
-                            <span class="seat">B13</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button id="confirmSeat" type="button" class="btn btn-primary">Confirm Seat</button>
-                </div>
-            </div>
-        </div>
+// Helper function to show alerts
+function showAlert(message, type = "warning") {
+    const alertDiv = document.createElement("div");
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show animate__animated animate__fadeIn`;
+    alertDiv.innerHTML = `
+        <i class="fas fa-exclamation-circle mr-2"></i> ${message}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
     `;
-    appDiv.appendChild(seatSelectionModal);
-
-  //Modal chọn điểm đón và trả
-    const pickupDropoffModal = document.createElement("div");
-    pickupDropoffModal.id = "pickupDropoffModal";
-    pickupDropoffModal.className = "modal fade";
-    pickupDropoffModal.setAttribute("tabindex", "-1");
-    pickupDropoffModal.innerHTML = `
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">Select Pickup & Drop-off Points</h5>
-                    <button type="button" class="close" data-dismiss="modal">
-                        <span>&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <label for="pickup">Pickup Point:</label>
-                    <select id="pickup" class="form-control">
-                        <option value="station1">Bus Station 1</option>
-                        <option value="station2">Bus Station 2</option>
-                    </select>
-                    <label for="dropoff" class="mt-3">Drop-off Point:</label>
-                    <select id="dropoff" class="form-control">
-                        <option value="stop1">Stop 1</option>
-                        <option value="stop2">Stop 2</option>
-                    </select>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Back</button>
-                    <button type="button" class="btn btn-primary" onclick="goToPayment()">Go to Payment</button>
-                </div>
-            </div>
-        </div>
-    `;
-    appDiv.appendChild(pickupDropoffModal);
-
-
-    // Modal xác nhận thông tin
-    const confirmInfoModal = document.createElement("div");
-    confirmInfoModal.id = "confirmInfoModal";
-    confirmInfoModal.className = "modal fade";
-    confirmInfoModal.setAttribute("tabindex", "-1");
-    confirmInfoModal.innerHTML = `
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Confirm Your Booking</h5>
-                        <button type="button" class="close" data-dismiss="modal">
-                            <span>&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="mb-2">
-                            <label class="form-label">Full Name</label>
-                            <input type="text" id="confirmFullName" class="form-control" readonly>
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label">Phone Number</label>
-                            <input type="text" id="confirmPhone" class="form-control" readonly>
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label">Email</label>
-                            <input type="email" id="confirmEmail" class="form-control" readonly>
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label">Trip</label>
-                            <input type="text" id="confirmTrip" class="form-control" readonly>
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label">Seat</label>
-                            <input type="text" id="confirmSeat" class="form-control" readonly>
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label">Pickup Point</label>
-                            <input type="text" id="confirmPickup" class="form-control" readonly>
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label">Drop-off Point</label>
-                            <input type="text" id="confirmDropoff" class="form-control" readonly>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary" onclick="proceedToPayment()">Proceed to Payment</button>
-                    </div>
-                </div>
-            </div>
-        `;
-    appDiv.appendChild(confirmInfoModal);
+    
+    // Append to body or a specific container
+    const container = document.querySelector(".container") || document.body;
+    container.prepend(alertDiv);
+    
+    // Auto dismiss after 5 seconds
+    setTimeout(() => {
+        alertDiv.classList.remove("show");
+        setTimeout(() => alertDiv.remove(), 300);
+    }, 5000);
 }
 
-
-
-
+// Initialize the page
+document.addEventListener("DOMContentLoaded", function() {
+    // Mobile menu toggle
+    const menuToggle = document.querySelector('.menu-toggle');
+    const mainMenu = document.querySelector('.main-menu');
+    
+    if (menuToggle && mainMenu) {
+        menuToggle.addEventListener('click', function() {
+            mainMenu.classList.toggle('show');
+        });
+        
+        // Hide menu when clicking outside
+        document.addEventListener('click', function(event) {
+            if (!event.target.closest('.navigator')) {
+                mainMenu.classList.remove('show');
+            }
+        });
+        
+        // Prevent the document click from closing menu when clicking on toggle
+        menuToggle.addEventListener('click', function(event) {
+            event.stopPropagation();
+        });
+    }
+    
+    // Back to top button functionality
+    const backToTopBtn = document.getElementById('back-to-top');
+    
+    if (backToTopBtn) {
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 200) {
+                backToTopBtn.classList.add('visible');
+            } else {
+                backToTopBtn.classList.remove('visible');
+            }
+        });
+        
+        backToTopBtn.addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    }
+    
+    // Initialize news section
+    renderNews();
+    
+    // Add event listener for trip search form
+    const tripForm = document.getElementById("trip-form");
+    if (tripForm) {
+        tripForm.addEventListener("submit", searchTrip);
+    }
+    
+    // Add smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            const targetId = this.getAttribute('href');
+            if (targetId !== "#") {
+                e.preventDefault();
+                const target = document.querySelector(targetId);
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                }
+            }
+        });
+    });
+});
