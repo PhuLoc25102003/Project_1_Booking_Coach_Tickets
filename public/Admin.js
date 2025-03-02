@@ -1522,6 +1522,20 @@ function loadDashboardData() {
             console.error('Error fetching dashboard data:', error);
         }
     });
+
+    $.ajax({
+        url: '/totalRevenue',
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            const totalRevenue = parseInt(data.totalRevenue);
+            $('#totalRevenue').text(totalRevenue + " VND");
+        },
+        error: function (error) {
+            console.error('Error fetching dashboard data:', error);
+        }
+    });
+
 }
 
 

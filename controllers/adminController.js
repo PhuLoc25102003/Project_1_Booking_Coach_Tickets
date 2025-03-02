@@ -634,6 +634,15 @@ const dashboard = {
             return res.status(500).json({ error: 'Failed to fetch total drivers' });
         }
     },
+    getTotalRevenue: async (req, res) => {
+        try {
+            const totalRevenue = await adminModel.dashboard.getTotalRevenue();
+            return res.status(200).json({ totalRevenue });
+        } catch (err) {
+            console.error('Error in getTotalRevenues controller:', err);
+            return res.status(500).json({ error: 'Failed to fetch total revenue' });
+        }
+    },
 
 }
 

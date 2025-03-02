@@ -613,10 +613,18 @@ const dashboard = {
             console.error('Error fetching total drivers:', err);
             throw err;
         }
-    }
+    },
+    getTotalRevenue: async () => {
+        const query = 'SELECT sum(expense) AS totalRevenue FROM clients';
+        try {
+            const [result] = await db.query(query);
+            return result[0].totalRevenue;
+        } catch (err) {
+            console.error('Error fetching total admins:', err);
+            throw err;
+        }
+    },
 }
-
-
 
 
 

@@ -6,13 +6,6 @@ const adminController = require('../controllers/adminController');
 const authController = require('../controllers/authController');
 
 // Middleware kiểm tra session
-const requireLogin = (req, res, next) => {
-    if (!req.session.user) {
-        return res.redirect('/Login');
-    }
-    next();
-};
-
 const requireAdmin = (req, res, next) => {
     if (!req.session.user || req.session.user.type !== 'admin') {
         return res.redirect('/Login');
@@ -21,7 +14,7 @@ const requireAdmin = (req, res, next) => {
 };
 
 // Routes
-router.get('/', requireLogin, (req, res) => {
+router.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, '../views', 'homepage.html'));
 });
 
@@ -37,15 +30,7 @@ router.get('/Login', (req, res) => {
             return res.redirect('/');
         }
     }
-    res.sendFile(path.join(__dirname, '../views', 'LoginAndRegister.html'));
-});
-
-router.get('/booking', requireLogin, (req, res) => {
-    res.sendFile(path.join(__dirname, '../views', 'booking.html'));
-});
-
-router.get('/AddRoute', requireAdmin, (req, res) => {
-    res.sendFile(path.join(__dirname, '../views', 'AddRoute.html'));
+    res.sendFile(path.join(__dirname, '../views', 'NewLoginForm.html'));
 });
 
 // API routes
@@ -83,7 +68,7 @@ router.post('/update-client', requireAdmin, adminController.client.updateClient)
 router.get('/search-clients', requireAdmin, adminController.client.searchClients);
 
 // Booking routes
-router.post('/add-booking', requireLogin, adminController.booking.addBooking);
+router.post('/add-booking', adminController.booking.addBooking);
 router.get('/get-booked-seats', adminController.booking.getBookedList);
 router.get('/bookings', requireAdmin, adminController.booking.getBookings);
 router.post('/update-booking-status', requireAdmin, adminController.booking.updateBookingStatus);
@@ -95,5 +80,6 @@ router.get('/totalCoaches', requireAdmin, adminController.dashboard.getTotalCoac
 router.get('/totalClients', requireAdmin, adminController.dashboard.getTotalClients);
 router.get('/totalRoutes', requireAdmin, adminController.dashboard.getTotalRoutes);
 router.get('/totalAdmins', requireAdmin, adminController.dashboard.getTotalAdmins);
+router.get('/totalRevenue', requireAdmin, adminController.dashboard.getTotalRevenue);
 
 module.exports = router;

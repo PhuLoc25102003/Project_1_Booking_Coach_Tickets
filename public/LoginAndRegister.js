@@ -1,19 +1,17 @@
 function login() {
-    $("#loginForm").on("submit", function (event) {
+    $("#loginBtn").on("click", function (event) {
         event.preventDefault();
         const username = $('#login-username').val();
         const password = $('#login-password').val();
-
-        // Lấy nút và overlay
+        $(this).prop('disable', true);
         const $loginBtn = $('#loginBtn');
         const $loadingOverlay = $('#loadingOverlay');
 
-        // Vô hiệu hóa nút và hiển thị overlay loading
         $loginBtn.prop('disabled', true);
         $loadingOverlay.show();
 
-        const startTime = Date.now(); // Thời gian bắt đầu yêu cầu
-        const minLoadingTime = 1000; // Độ trễ tối thiểu (1 giây)
+        const startTime = Date.now();
+        const minLoadingTime = 1000;
 
         $.ajax({
             url: '/login',
@@ -23,10 +21,9 @@ function login() {
             data: JSON.stringify({ username, password }),
             success: function (data) {
                 console.log('Login response:', data);
-                const elapsedTime = Date.now() - startTime; // Thời gian đã trôi qua
-                const remainingTime = minLoadingTime - elapsedTime; // Thời gian còn lại để đạt tối thiểu
+                const elapsedTime = Date.now() - startTime; 
+                const remainingTime = minLoadingTime - elapsedTime; 
 
-                // Đảm bảo loading hiển thị ít nhất minLoadingTime
                 setTimeout(() => {
                     if (data.type === 'admin') {
                         $('#welcomeContent').html(`<h1>Welcome, ${data.user?.name || 'Admin'}!</h1>`);
@@ -37,6 +34,7 @@ function login() {
                         $('#welcomeContent').html(`<h1>Welcome, ${data.user?.name || 'User'}!</h1>`);
                         setTimeout(() => {
                             window.location.href = '/';
+                            updateUserDropdown();
                         }, 1000);
                     } else {
                         alert('Unknown account type');
@@ -74,15 +72,10 @@ function checkSession() {
                 } else if (data.type === 'user' && currentPath !== '/') {
                     window.location.href = '/';
                 }
-            } else if (currentPath !== '/Login') {
-                window.location.href = '/Login';
             }
         },
         error: function (xhr) {
             console.error('Session check error:', xhr);
-            if (window.location.pathname !== '/Login') {
-                window.location.href = '/Login'; // Chuyển về login nếu lỗi
-            }
         }
     });
 }
@@ -95,6 +88,7 @@ function logout() {
         success: function (data) {
             alert(data.message);
             window.location.href = '/login';
+            updateUserDropdown();
         },
         error: function (xhr) {
             console.error('Logout error:', xhr);
@@ -104,8 +98,18 @@ function logout() {
 }
 
 function register() {
-    $("#registerForm").on("submit", function (event) {
+    $("#registerBtn").on("click", function (event) {
         event.preventDefault();
+
+        const $registerBtn = $('#registerBtn');
+        const $loadingOverlay = $('#loadingOverlay');
+
+        // Vô hiệu hóa nút và hiển thị overlay loading
+        $registerBtn.prop('disabled', true);
+        $loadingOverlay.show();
+
+        const startTime = Date.now();
+        const minLoadingTime = 1000; // Delay tối thiểu 1 giây
 
         const username = $('#register-username').val();
         const password = $('#register-password').val();
@@ -114,22 +118,49 @@ function register() {
         const email = $('#register-email').val();
         const phoneNumber = $('#register-phone').val();
 
-
         // Kiểm tra điều kiện đầu vào
         if (username.length === 0) {
-            alert("Please enter your username!");
+            setTimeout(() => {
+                alert("Please enter your username!");
+                $registerBtn.prop('disabled', false);
+                $loadingOverlay.hide();
+            }, minLoadingTime - (Date.now() - startTime));
         } else if (password.length === 0) {
-            alert("Please enter your password!");
+            setTimeout(() => {
+                alert("Please enter your password!");
+                $registerBtn.prop('disabled', false);
+                $loadingOverlay.hide();
+            }, minLoadingTime - (Date.now() - startTime));
         } else if (confirmPassword.length === 0) {
-            alert("Please confirm your password!");
+            setTimeout(() => {
+                alert("Please confirm your password!");
+                $registerBtn.prop('disabled', false);
+                $loadingOverlay.hide();
+            }, minLoadingTime - (Date.now() - startTime));
         } else if (password !== confirmPassword) {
-            alert("Please enter the confirm password correctly!");
+            setTimeout(() => {
+                alert("Please enter the confirm password correctly!");
+                $registerBtn.prop('disabled', false);
+                $loadingOverlay.hide();
+            }, minLoadingTime - (Date.now() - startTime));
         } else if (name.length === 0) {
-            alert("Please enter your name!")
+            setTimeout(() => {
+                alert("Please enter your name!");
+                $registerBtn.prop('disabled', false);
+                $loadingOverlay.hide();
+            }, minLoadingTime - (Date.now() - startTime));
         } else if (email.length === 0) {
-            alert("Please enter your email!")
+            setTimeout(() => {
+                alert("Please enter your email!");
+                $registerBtn.prop('disabled', false);
+                $loadingOverlay.hide();
+            }, minLoadingTime - (Date.now() - startTime));
         } else if (phoneNumber.length === 0) {
-            alert("Please enter your phone number!")
+            setTimeout(() => {
+                alert("Please enter your phone number!");
+                $registerBtn.prop('disabled', false);
+                $loadingOverlay.hide();
+            }, minLoadingTime - (Date.now() - startTime));
         } else {
             $.ajax({
                 url: '/register-client',
@@ -137,14 +168,73 @@ function register() {
                 contentType: 'application/json',
                 data: JSON.stringify({ username, password, confirmPassword, name, email, phoneNumber }),
                 success: function (data) {
-                    alert("Registration successful!");
+                    const elapsedTime = Date.now() - startTime;
+                    const remainingTime = minLoadingTime - elapsedTime;
+
+                    setTimeout(() => {
+                        alert("Registration successful!");
+                        resetRegisterForm();
+                        $registerBtn.prop('disabled', false);
+                        $loadingOverlay.hide();
+                    }, remainingTime > 0 ? remainingTime : 0);
                 },
                 error: function (error) {
-                    alert("Error: " + error.responseText);
+                    const elapsedTime = Date.now() - startTime;
+                    const remainingTime = minLoadingTime - elapsedTime;
+
+                    setTimeout(() => {
+                        alert("Error: " + error.responseText);
+                        $registerBtn.prop('disabled', false);
+                        $loadingOverlay.hide();
+                    }, remainingTime > 0 ? remainingTime : 0);
                 }
             });
         }
+    });
+}
 
+function resetRegisterForm() {
+    $('#register-username').val("");
+    $('#register-password').val("");
+    $('#register-confirm-password').val("");
+    $('#register-name').val("");
+    $('#register-email').val("");
+    $('#register-phone').val("");
+}
+
+function updateUserDropdown() {
+    $.ajax({
+        url: '/check-session',
+        type: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            console.log('Session check:', data);
+            const $beforeLogin = $('.before-login');
+            const $afterLogin = $('.after-login');
+            const $profileLink = $('#profileLink');
+            const $logoutLink = $('#logoutLink');
+            const $userName = $('#userName');
+
+            if (data.loggedIn) {
+                $beforeLogin.hide();
+                $afterLogin.show();
+                $userName.text(data.user.name);
+                $profileLink.show();
+                $logoutLink.show();
+            } else {
+                $beforeLogin.show();
+                $afterLogin.hide();
+                $profileLink.hide();
+                $logoutLink.hide();
+            }
+        },
+        error: function (xhr) {
+            console.error('Session check error:', xhr);
+            $('.before-login').show();
+            $('.after-login').hide();
+            $('#profileLink').hide();
+            $('#logoutLink').hide();
+        }
     });
 }
 
@@ -157,7 +247,7 @@ function updateAdminName() {
             success: function (data) {
                 console.log('Session check:', data);
                 if (data.loggedIn && data.type === 'admin') {
-                    $('.adminName').text(data.name);
+                    $('.adminName').text(data.user.name);
                 }
             },
             error: function (xhr) {
@@ -166,6 +256,7 @@ function updateAdminName() {
         });
     }
 }
+
 
 $(document).ready(function () {
     // Toggle to show register form
@@ -223,14 +314,22 @@ $(document).ready(function () {
     checkSession();
     updateAdminName();
     login();
+
     $('#logoutBtn').on('click', function (e) {
         e.preventDefault();
-        logout();
+        $('#confirmLogoutModal').modal('show');
+        $('#confirmLogoutBtn').on('click', function () {
+            $('#confirmLogoutModal').modal('hide');
+            logout();
+        });
+
     });
-    $('#login').on('click', function (e) {
+
+    $('#logoutLink').on('click', function (e) {
         e.preventDefault();
         logout();
     });
 
+    updateUserDropdown();
 
 });

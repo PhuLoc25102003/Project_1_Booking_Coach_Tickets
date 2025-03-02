@@ -3,12 +3,12 @@ const session = require('express-session');
 
 
 const sessionConfig = {
-    secret: 'your-secret-key', 
+    secret: 'your-secret-key',
     resave: false,
-    saveUninitialized: false, 
+    saveUninitialized: false,
     cookie: {
-        maxAge: 24 * 60 * 60 * 1000, 
-        secure: false 
+        maxAge: 24 * 60 * 60 * 1000,
+        secure: false
     }
 };
 
@@ -16,6 +16,16 @@ const login = async (req, res) => {
     const { username, password } = req.body;
 
     try {
+        if (req.session.user) {
+            req.session.destroy((err) => {
+                if (err) console.error('Error destroying old session:', err);
+                console.log('Old session destroyed');
+            });
+            req.session.regenerate((err) => {
+                if (err) console.error('Error regenerating session:', err);
+            });
+        }
+
         let user = await userModel.findUserByUsername(username);
 
         if (!user) {
@@ -52,10 +62,10 @@ const login = async (req, res) => {
 
 const checkSession = (req, res) => {
     if (req.session.user) {
-        return res.status(200).json({ 
-            loggedIn: true, 
-            type: req.session.user.type, 
-            name: req.session.user.name 
+        return res.status(200).json({
+            loggedIn: true,
+            type: req.session.user.type,
+            user: req.session.user
         });
     } else {
         return res.status(200).json({ loggedIn: false });
