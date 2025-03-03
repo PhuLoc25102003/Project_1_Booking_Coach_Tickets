@@ -618,7 +618,8 @@ header {
     font-size: 28px;
     font-weight: 600;
     text-align: center;
-    color: #1A73E8; /* Xanh lam từ sidebar */
+    color: #1A73E8;
+    /* Xanh lam từ sidebar */
     margin-bottom: 25px;
 }
 
@@ -647,7 +648,8 @@ header {
 }
 
 .btn-custom {
-    background-color: #1A73E8; /* Xanh lam từ sidebar */
+    background-color: #1A73E8;
+    /* Xanh lam từ sidebar */
     border: none;
     color: #ffffff;
     width: 100%;
@@ -659,7 +661,8 @@ header {
 }
 
 .btn-custom:hover {
-    background-color: #135ABF; /* Đậm hơn khi hover */
+    background-color: #135ABF;
+    /* Đậm hơn khi hover */
     transform: translateY(-2px);
 }
 
@@ -685,4 +688,140 @@ header {
 
 .form-control.is-invalid:focus {
     box-shadow: 0 0 5px rgba(220, 53, 69, 0.4);
+}
+
+.suggestion-client-list,
+.suggestion-driver-list,
+.suggestion-coach-list {
+    position: absolute;
+    /* Cố định vị trí ngay dưới input */
+    width: 300px;
+    /* Cùng chiều rộng với input */
+    max-height: 200px;
+    /* Chiều cao tối đa, nếu dài hơn sẽ có thanh cuộn */
+    overflow-y: auto;
+    /* Thêm thanh cuộn dọc nếu cần */
+    background-color: #fff;
+    /* Màu nền trắng */
+    border: 1px solid #ddd;
+    /* Viền nhẹ */
+    border-radius: 4px;
+    /* Bo góc */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Bóng đổ nhẹ */
+    list-style: none;
+    /* Bỏ dấu chấm của ul */
+    padding: 0;
+    margin: 0;
+    z-index: 1000;
+    /* Đảm bảo danh sách nằm trên các phần tử khác */
+    display: none;
+    /* Ẩn mặc định, sẽ hiển thị khi có gợi ý */
+}
+
+/* Định dạng từng mục gợi ý */
+.suggestion-client-list li.suggestion-style,
+.suggestion-driver-list li.suggestion-style,
+.suggestion-coach-list li.suggestion-style {
+    padding: 10px;
+    /* Khoảng cách bên trong */
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+    /* Con trỏ chuột thành dạng tay khi hover */
+    border-bottom: 1px solid #eee;
+    /* Đường phân cách giữa các mục */
+}
+
+/* Hiệu ứng khi hover hoặc chọn */
+.suggestion-client-list li.suggestion-style:hover,
+.suggestion-driver-list li.suggestion-style:hover,
+.suggestion-coach-list li.suggestion-style:hover {
+    background-color: #f5f5f5;
+    /* Màu nền khi hover */
+    color: #007bff;
+    /* Màu chữ khi hover */
+}
+
+/* Xóa đường viền dưới của mục cuối cùng */
+.suggestion-client-list li.suggestion-style:last-child,
+.suggestion-driver-list li.suggestion-style:last-child,
+.suggestion-coach-list li.suggestion-style:last-child {
+    border-bottom: none;
+}
+
+
+
+
+.suggestion-route-list {
+    position: absolute;
+    /* Cố định vị trí ngay dưới input */
+    width: 350px;
+    /* Cùng chiều rộng với input */
+    max-height: 250px;
+    /* Chiều cao tối đa, nếu dài hơn sẽ có thanh cuộn */
+    overflow-y: auto;
+    /* Thêm thanh cuộn dọc nếu cần */
+    background-color: #fff;
+    /* Màu nền trắng */
+    border: 1px solid #ddd;
+    /* Viền nhẹ */
+    border-radius: 4px;
+    /* Bo góc */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    /* Bóng đổ nhẹ */
+    list-style: none;
+    /* Bỏ dấu chấm của ul */
+    padding: 0;
+    margin: 0;
+    z-index: 1000;
+    /* Đảm bảo danh sách nằm trên các phần tử khác */
+    display: none;
+    /* Ẩn mặc định, sẽ hiển thị khi có gợi ý */
+}
+
+/* Định dạng từng mục gợi ý */
+.suggestion-route-list li.searchRoute {
+    padding: 12px;
+    /* Khoảng cách bên trong */
+    border-bottom: 1px solid #eee;
+    /* Đường phân cách giữa các mục */
+    cursor: pointer;
+    /* Con trỏ chuột thành dạng tay khi hover */
+    transition: background-color 0.2s ease;
+    /* Hiệu ứng mượt mà khi hover */
+}
+
+/* Định dạng nội dung bên trong li */
+.suggestion-route-list li.searchRoute div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    /* Khoảng cách giữa các phần tử con */
+}
+
+/* Định dạng tiêu đề (coach_operator) */
+.suggestion-route-list li.searchRoute h2 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Định dạng đoạn văn (departure_point -> arrival_point) */
+.suggestion-route-list li.searchRoute p {
+    margin: 0;
+    font-size: 14px;
+    color: #666;
+}
+
+/* Hiệu ứng khi hover hoặc chọn */
+.suggestion-route-list li.searchRoute:hover {
+    background-color: #f8f9fa;
+    /* Màu nền khi hover */
+}
+
+/* Xóa đường viền dưới của mục cuối cùng */
+.suggestion-route-list li.searchRoute:last-child {
+    border-bottom: none;
 }

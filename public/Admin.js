@@ -428,6 +428,7 @@ function editCoach() {
     });
 }
 
+
 function searchDrivers() {
     $('#coachDriverName').on('input', function () {
         const query = $(this).val();
@@ -438,9 +439,14 @@ function searchDrivers() {
                 data: { q: query },
                 success: function (response) {
                     $('#driverSuggestions').empty();
-                    response.forEach(function (driver) {
-                        $('#driverSuggestions').append(`<li class="suggestion-style" id = "${driver.driver_id}">${driver.driver_name}</li>`);
-                    });
+                    if (response.length > 0) {
+                        response.forEach(function (driver) {
+                            $('#driverSuggestions').append(`<li class="suggestion-style" id = "${driver.driver_id}">${driver.driver_name}</li>`);
+                        });
+                        $('#driverSuggestions').show();
+                    } else {
+                        $('#driverSuggestions').hide();
+                    }
                 },
                 error: function (err) {
                     console.error('Error fetching Driver list:', err);
@@ -717,7 +723,7 @@ function editRoute() {
 }
 
 
-function searchLicense() {
+function searchCoach() {
     $('#coachLicensePlate').on('input', function () {
         const query = $(this).val();
         if (query.length > 0) {
@@ -727,9 +733,15 @@ function searchLicense() {
                 data: { q: query },
                 success: function (response) {
                     $('#coachSuggestions').empty();
-                    response.forEach(function (coach) {
-                        $('#coachSuggestions').append(`<li class="suggestion-style" id = "${coach.coach_id}">${coach.license_plate}</li>`);
-                    });
+                    if(response.length > 0){
+                        response.forEach(function (coach) {
+                            $('#coachSuggestions').append(`<li class="suggestion-style" id = "${coach.coach_id}">${coach.license_plate}</li>`);
+                        });
+                        $('#coachSuggestions').show();
+                    }else{
+                        $('#coachSuggestions').hide();
+                    }
+                   
                 },
                 error: function (err) {
                     console.error('Error fetching coach list:', err);
@@ -1005,16 +1017,12 @@ function showBookingTable() {
                 "data": null,
                 "render": function (data, type, row) {
                     return `
-                        <button 
-                            class="btn btn-warning btn-sm confirm-btn" 
-                            data-booking-id="${row.booking_id}">
-                            <i class="fas fa-edit"></i> Confirm
-                        </button>
-                        <button 
-                            class="btn btn-danger btn-sm cancel-btn" 
-                            data-booking-id="${row.booking_id}">
-                            <i class="fas fa-trash"></i> Cancel
-                        </button>`;
+                      <button class="btn btn-warning btn-sm confirm-btn" data-booking-id="${row.booking_id}">
+                        <i class="fas fa-check"></i> Confirm
+                    </button>
+                    <button class="btn btn-danger btn-sm cancel-btn" data-booking-id="${row.booking_id}">
+                        <i class="fas fa-times"></i> Cancel
+                    </button>`;
                 },
                 "orderable": false
             }
@@ -1129,12 +1137,18 @@ function searchClients() {
                 method: 'GET',
                 data: { q: query },
                 success: function (response) {
-                    $('#clientSuggestions').empty();
-                    response.forEach(function (client) {
-                        $('#clientSuggestions').append(
-                            `<li class="suggestion-style" id="${client.client_id}">${client.client_name}</li>`
-                        );
-                    });
+                    const $suggestions = $('#clientSuggestions');
+                    $suggestions.empty();
+                    if (response.length > 0) {
+                        response.forEach(function (client) {
+                            $suggestions.append(
+                                `<li class="suggestion-style" id="${client.client_id}">${client.client_name}</li>`
+                            );
+                        });
+                        $suggestions.show();
+                    } else {
+                        $suggestions.hide();
+                    }
                 },
                 error: function (err) {
                     console.error('Error fetching Client list:', err);
@@ -1145,7 +1159,7 @@ function searchClients() {
                 }
             });
         } else {
-            $('#clientSuggestions').empty();
+            $('#clientSuggestions').empty().hide();
         }
     });
 
@@ -1154,11 +1168,16 @@ function searchClients() {
         var clientId = $(this).attr('id');
         $('#setClientID').val(clientId);
         $('#clientNameSearch').val(selectedClient);
-        $('#clientSuggestions').empty();
+        $('#clientSuggestions').empty().hide();
         console.log("Client ID: " + clientId + ", Client name: " + selectedClient);
     });
-}
 
+    $(document).on('click', function (e) {
+        if (!$(e.target).closest('#clientNameSearch, #clientSuggestions').length) {
+            $('#clientSuggestions').hide();
+        }
+    });
+}
 
 
 
@@ -1173,6 +1192,7 @@ function searchRoutes() {
 
     $('#routeDetails').on('input', function () {
         const query = $(this).val();
+        const $suggestions = $('#routeSuggestions');
         if (query.length > 0) {
             $.ajax({
                 url: '/search-routes',
@@ -1180,23 +1200,28 @@ function searchRoutes() {
                 data: { q: query },
                 success: function (response) {
                     console.log('Routes response:', response);
-                    $('#routeSuggestions').empty();
-                    response.forEach(function (route) {
-                        console.log('Appending route with route_id:', route.route_id);
-                        $('#routeSuggestions').append(`
-                            <li class="suggestion-style searchRoute" id="${route.route_id}" 
-                                data-departure="${route.departure_point}" 
-                                data-arrival="${route.arrival_point}"
-                                data-seats="${route.seats}"
-                                data-routeId="${route.route_id}"
-                                data-price="${route.price}">
-                                <div>
-                                    <h2>${route.coach_operator}</h2>
-                                    <p>${route.departure_point} -> ${route.arrival_point}</p>
-                                </div>
-                            </li>
-                        `);
-                    });
+                    $suggestions.empty();
+                    if (response.length > 0) {
+                        response.forEach(function (route) {
+                            console.log('Appending route with route_id:', route.route_id);
+                            $suggestions.append(`
+                                <li class="suggestion-style searchRoute" id="${route.route_id}" 
+                                    data-departure="${route.departure_point}" 
+                                    data-arrival="${route.arrival_point}"
+                                    data-seats="${route.seats}"
+                                    data-routeId="${route.route_id}"
+                                    data-price="${route.price}">
+                                    <div>
+                                        <h2>${route.coach_operator}</h2>
+                                        <p>${route.departure_point} -> ${route.arrival_point}</p>
+                                    </div>
+                                </li>
+                            `);
+                        });
+                        $suggestions.show(); // Hiển thị danh sách khi có gợi ý
+                    } else {
+                        $suggestions.hide(); // Ẩn nếu không có kết quả
+                    }
                 },
                 error: function (err) {
                     console.error('Error fetching Route list:', err);
@@ -1204,7 +1229,7 @@ function searchRoutes() {
                 }
             });
         } else {
-            $('#routeSuggestions').empty();
+            $suggestions.empty().hide(); // Ẩn khi không có dữ liệu
         }
     });
 
@@ -1605,7 +1630,7 @@ $(document).ready(function () {
     });
     addRoute();
     editRoute();
-    searchLicense();
+    searchCoach();
     $(document).on('click', '#deleteRouteBtn', function () {
         const routeId = $(this).data('route-id');
         $('#confirmDeleteRouteModal').modal('show');
