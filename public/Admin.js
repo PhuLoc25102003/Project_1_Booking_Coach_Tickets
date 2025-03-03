@@ -11,7 +11,6 @@ function hideContent() {
 }
 
 
-
 function menuStatus() {
     $('.menu-item').click(function () {
         $('.menu-item').removeClass('active');
@@ -126,11 +125,11 @@ function showDriverTable() {
                 "orderable": false
             }
         ],
-        "pageLength": 10,  // Số dòng hiển thị trên mỗi trang
-        "lengthMenu": [10, 25, 50, 100],  // Các tùy chọn cho số lượng dòng mỗi trang
-        "searching": true, // Cho phép tìm kiếm
-        "paging": true,    // Cho phép phân trang
-        "ordering": true,   // Cho phép sắp xếp
+        "pageLength": 10,
+        "lengthMenu": [10, 25, 50, 100],
+        "searching": true,
+        "paging": true,
+        "ordering": true,
         "order": [[0, "asc"]]
     });
 }
@@ -252,6 +251,7 @@ function loadCoachList() {
         $('#coachModal').modal('show');
     });
 }
+
 
 function showCoachTable() {
     if ($.fn.DataTable.isDataTable('#coach-table')) {
@@ -474,7 +474,6 @@ function searchDrivers() {
 
 
 //Route_function
-
 function loadRouteList() {
     $('#routeContent').html(`
         <div class="d-flex justify-content-between align-items-center mb-3">
@@ -1031,7 +1030,7 @@ function showBookingTable() {
     $('#booking-table').on('click', '.confirm-btn', function () {
         const bookingId = $(this).data('booking-id');
         confirmBooking(bookingId);
-        
+
     });
 
     $('#booking-table').on('click', '.cancel-btn', function () {
@@ -1132,8 +1131,9 @@ function searchClients() {
                 success: function (response) {
                     $('#clientSuggestions').empty();
                     response.forEach(function (client) {
-                        $('#setClientID').val(client.client_id);
-                        $('#clientSuggestions').append(`<li class="suggestion-style" id = "${client.client_id}">${client.client_name}</li>`);
+                        $('#clientSuggestions').append(
+                            `<li class="suggestion-style" id="${client.client_id}">${client.client_name}</li>`
+                        );
                     });
                 },
                 error: function (err) {
@@ -1144,26 +1144,22 @@ function searchClients() {
                     alert('Error fetching client list');
                 }
             });
-            $(document).on('click', '.suggestion-client-list li', function () {
-                var selectedClient = $(this).text();
-                var clientId = $(this).attr('id');
-                $('#setClientId').val(clientId);
-                $('#clientNameSearch').val(selectedClient);
-                $('.suggestion-client-list').empty();
-            });
-
-            $('#clientNameSearch').on('blur', function () {
-                var enteredValue = $(this).val();
-                if (!suggestions.includes(enteredValue)) {
-                    alert('Giá trị bạn nhập không tồn tại trong danh sách gợi ý.');
-                    $(this).val('');
-                }
-            });
         } else {
-            $('#clientNameSearch').empty();
+            $('#clientSuggestions').empty();
         }
     });
+
+    $(document).on('click', '#clientSuggestions li', function () {
+        var selectedClient = $(this).text();
+        var clientId = $(this).attr('id');
+        $('#setClientID').val(clientId);
+        $('#clientNameSearch').val(selectedClient);
+        $('#clientSuggestions').empty();
+        console.log("Client ID: " + clientId + ", Client name: " + selectedClient);
+    });
 }
+
+
 
 
 
@@ -1362,6 +1358,8 @@ function searchRoutes() {
             price: $('#bookingPrice').val(),
             seatNumber: $('#seatNumber').val()
         };
+        console.log("Client ID là:" + $('#setClientID').val());
+
 
         $.ajax({
             url: '/add-booking',
@@ -1396,29 +1394,27 @@ function searchRoutes() {
 function loadAdminContent() {
     $('#adminContent').html(`
         <div class="form-container">
-                    <h2 class="form-title">Add Admin Account</h2>
-                    <form id="adminForm">
-                        <div class="mb-3">
-                            <label for="admin-name" class="form-label">Name</label>
-                            <input type="text" class="form-control" id="admin-name" placeholder="Enter full name" required>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="admin-username" class="form-label">Username</label>
-                            <input type="text" class="form-control" id="admin-username" placeholder="Enter username" required>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label for="admin-password" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="admin-password" placeholder="Enter password" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="admin-confirmPassword" class="form-label">Confirm Password</label>
-                            <input type="password" class="form-control" id="admin-confirmPassword" placeholder="Confirm password" required>
-                        </div>
-                        <button type="submit" class="btn btn-custom" id = "createAdminBtn">Create Account</button>
-                    </form>
-                </div>
+        <h2 class="form-title">Add Admin Account</h2>
+        <form id="adminForm">
+            <div class="mb-3">
+                <label for="admin-name" class="form-label">Name</label>
+                <input type="text" class="form-control" id="admin-name" placeholder="Enter full name" required>
+            </div>
+            <div class="mb-3">
+                <label for="admin-username" class="form-label">Username</label>
+                <input type="text" class="form-control" id="admin-username" placeholder="Enter username" required>
+            </div>
+            <div class="mb-3">
+                <label for="admin-password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="admin-password" placeholder="Enter password" required>
+            </div>
+            <div class="mb-3">
+                <label for="admin-confirmPassword" class="form-label">Confirm Password</label>
+                <input type="password" class="form-control" id="admin-confirmPassword" placeholder="Confirm password" required>
+            </div>
+            <button type="submit" class="btn btn-custom" id="createAdminBtn">Create Account</button>
+        </form>
+    </div>
     `);
 }
 
@@ -1426,6 +1422,7 @@ function registerAdmin() {
     $(document).on("click", "#createAdminBtn", function (event) {
         event.preventDefault();
 
+        $('#createAdminBtn').prop('disable', true);
 
         const username = $('#admin-username').val();
         const password = $('#admin-password').val();
@@ -1451,9 +1448,12 @@ function registerAdmin() {
                 data: JSON.stringify({ username, password, confirmPassword, name }),
                 success: function (data) {
                     alert("Registration successful!");
+                    $('#adminForm')[0].reset();
+                    $('#createAdminBtn').prop('disable', false);
                 },
                 error: function (error) {
                     alert("Error: " + error.responseText);
+                    $('#createAdminBtn').prop('disable', false);
                 }
             });
         }
@@ -1651,6 +1651,26 @@ $(document).ready(function () {
         hideContent();
         $('#adminContent').show();
         loadAdminContent();
+    });
+
+    $('.dropdown-toggle').on('click', function (e) {
+        e.preventDefault(); // Ngăn hành vi mặc định của thẻ <a>
+
+        // Tìm submenu ngay sau phần tử được nhấp
+        var $submenu = $(this).next('.submenu');
+
+        // Toggle submenu (hiện/ẩn)
+        $submenu.slideToggle(300); // Hiệu ứng trượt mượt mà trong 300ms
+
+        // Tùy chọn: Đóng các submenu khác nếu mở (chỉ mở một submenu tại một thời điểm)
+        $('.submenu').not($submenu).slideUp(300);
+    });
+
+    // Tùy chọn: Đóng submenu khi nhấp ra ngoài
+    $(document).on('click', function (e) {
+        if (!$(e.target).closest('.dropdown').length) {
+            $('.submenu').slideUp(300);
+        }
     });
 
 });
